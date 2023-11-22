@@ -1,6 +1,7 @@
 {
-    "name": "@studician/api",
-    "scripts": {
-        "dev": "go run ."
-    }
+  "name": "@studician/api",
+  "scripts": {
+    "dev": "go run .",
+    "db:migrate": "goose -dir db/migrations postgres"
+  }
 }
