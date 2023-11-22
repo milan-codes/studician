@@ -1,0 +1,6 @@
+{
+    "name": "@studician/api",
+    "scripts": {
+        "dev": "go run ."
+    }
+}
