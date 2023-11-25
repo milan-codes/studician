@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"studician/api/db"
-	"studician/api/handler"
-	"studician/api/utils"
+	"studician/api/internal/db"
+	"studician/api/internal/handler"
+	"studician/api/internal/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"

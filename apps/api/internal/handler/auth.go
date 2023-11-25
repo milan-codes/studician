@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 	"net/http"
-	"studician/api/db"
-	"studician/api/utils"
+	"studician/api/internal/db"
+	"studician/api/internal/utils"
 	"time"
 
 	"github.com/alexedwards/argon2id"

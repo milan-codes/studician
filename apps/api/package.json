@@ -1,7 +1,7 @@
 {
   "name": "@studician/api",
   "scripts": {
-    "dev": "go run .",
+    "dev": "go run cmd/service/main.go",
     "db:migrate": "goose -dir db/migrations postgres",
     "db:generate": "sqlc generate"
   }
