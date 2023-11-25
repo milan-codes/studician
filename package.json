@@ -5,6 +5,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "dev:api": "turbo dev --filter=api",
+    "dev:web": "turbo dev --filter=web",
     "db:migrate": "turbo db:migrate",
     "db:generate": "turbo db:generate",
     "lint": "turbo lint",
