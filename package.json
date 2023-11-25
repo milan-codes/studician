@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:api": "turbo dev --filter=api",
     "db:migrate": "turbo db:migrate",
     "db:generate": "turbo db:generate",
     "lint": "turbo lint",
