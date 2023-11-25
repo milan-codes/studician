@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const getUserByEmail = `-- name: GetUserByEmail :one
@@ -57,6 +59,43 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.Username,
 		&i.Email,
 		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertUser = `-- name: InsertUser :one
+INSERT INTO users (
+    username,
+    email,
+    password
+) VALUES (
+    $1,
+    $2,
+    $3
+) RETURNING username, email, created_at, updated_at
+`
+
+type InsertUserParams struct {
+	Username string
+	Email    string
+	Password string
+}
+
+type InsertUserRow struct {
+	Username  string
+	Email     string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
+	row := q.db.QueryRow(ctx, insertUser, arg.Username, arg.Email, arg.Password)
+	var i InsertUserRow
+	err := row.Scan(
+		&i.Username,
+		&i.Email,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
