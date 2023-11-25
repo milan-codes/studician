@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
 	"os"
@@ -17,15 +16,7 @@ func main() {
         log.Fatal("Error loading .env file: ", err)
     }
 
-    db.Connect()
-    defer db.Close()
-    q := db.GetQueryClient()
-
-    user, err := q.GetUserByEmailOrUsername(context.Background(), "studician"); if err != nil {
-        log.Fatal("Error getting user: ", err)
-    }
-
-    log.Println(user)
+    db.Connect(); defer db.Close()
 
     e := echo.New()
 
@@ -37,5 +28,8 @@ func main() {
         return c.String(http.StatusOK, "pong")
     })
 
-    e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+    port := os.Getenv("PORT"); if port == "" {
+        port = "3001"
+    }
+    e.Logger.Fatal(e.Start(":" + port))
 }

@@ -10,8 +10,8 @@ import (
 
 type User struct {
 	ID        int32
-	Email     string
 	Username  string
+	Email     string
 	Password  string
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
