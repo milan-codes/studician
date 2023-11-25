@@ -34,6 +34,7 @@ func main() {
 
     auth := e.Group("/auth")
     auth.POST("/login", handler.Login)
+    auth.POST("/signup", handler.Signup)
 
     port := os.Getenv("PORT"); if port == "" {
         port = "3001"

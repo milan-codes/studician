@@ -3,6 +3,7 @@ module studician/api
 go 1.21.3
 
 require (
+	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/jackc/pgx/v5 v5.5.0
 	github.com/joho/godotenv v1.5.1
