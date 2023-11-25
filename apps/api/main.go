@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"os"
 	"studician/api/db"
+	"studician/api/handler"
+	"studician/api/utils"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
@@ -19,6 +22,7 @@ func main() {
     db.Connect(); defer db.Close()
 
     e := echo.New()
+    e.Validator = &utils.CustomValidator{Validator: validator.New()}
 
     e.GET("/", func(c echo.Context) error {
         return c.String(http.StatusOK, "API is running")
@@ -27,6 +31,9 @@ func main() {
 	e.GET("/ping", func(c echo.Context) error {
         return c.String(http.StatusOK, "pong")
     })
+
+    auth := e.Group("/auth")
+    auth.POST("/login", handler.Login)
 
     port := os.Getenv("PORT"); if port == "" {
         port = "3001"
