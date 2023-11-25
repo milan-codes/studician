@@ -4,8 +4,11 @@ import (
 	"context"
 	"net/http"
 	"studician/api/db"
+	"studician/api/utils"
+	"time"
 
 	"github.com/alexedwards/argon2id"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 )
@@ -29,7 +32,37 @@ func Login(c echo.Context) error {
 	if err := c.Validate(user); err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, user)
+
+	q := db.GetQueryClient()
+	userFromDB, err := q.GetUserByEmailOrUsername(context.Background(), user.EmailOrUsername); if err != nil {
+		if (err == pgx.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
+	}
+
+	passwordsMatch, err := argon2id.ComparePasswordAndHash(user.Password, userFromDB.Password); if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
+	}
+
+	if !passwordsMatch {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
+	}
+
+	claims := &utils.JwtClaims{
+		Username: userFromDB.Username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+		},
+	}
+
+	signedToken, err := utils.CreateToken(claims); if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Couldn't issue token")
+	}
+
+	return c.JSON(http.StatusCreated, map[string]string{
+		"token": signedToken,
+	})
 }
 
 func Signup(c echo.Context) error {
