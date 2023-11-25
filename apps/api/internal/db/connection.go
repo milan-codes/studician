@@ -11,7 +11,8 @@ import (
 var conn *pgx.Conn
 
 func Connect() {
-	dbUrl := os.Getenv("DATABASE_URL"); if dbUrl == "" {
+	dbUrl := os.Getenv("DATABASE_URL")
+	if dbUrl == "" {
 		log.Fatal("DATABASE_URL must be set")
 	}
 
@@ -22,7 +23,7 @@ func Connect() {
 	}
 }
 
-func GetQueryClient() (*Queries) {
+func GetQueryClient() *Queries {
 	return New(conn)
 }
 

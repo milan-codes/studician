@@ -13,7 +13,8 @@ type JwtClaims struct {
 }
 
 func CreateToken(claims *JwtClaims) (string, error) {
-	secret := os.Getenv("JWT_SECRET"); if secret == "" {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
 		log.Fatal("JWT_SECRET not set")
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -14,30 +14,32 @@ import (
 )
 
 func main() {
-    err := godotenv.Load()
-    if err != nil {
-        log.Fatal("Error loading .env file: ", err)
-    }
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file: ", err)
+	}
 
-    db.Connect(); defer db.Close()
+	db.Connect()
+	defer db.Close()
 
-    e := echo.New()
-    e.Validator = &utils.CustomValidator{Validator: validator.New()}
+	e := echo.New()
+	e.Validator = &utils.CustomValidator{Validator: validator.New()}
 
-    e.GET("/", func(c echo.Context) error {
-        return c.String(http.StatusOK, "API is running")
-    })
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "API is running")
+	})
 
 	e.GET("/ping", func(c echo.Context) error {
-        return c.String(http.StatusOK, "pong")
-    })
+		return c.String(http.StatusOK, "pong")
+	})
 
-    auth := e.Group("/auth")
-    auth.POST("/login", handler.Login)
-    auth.POST("/signup", handler.Signup)
+	auth := e.Group("/auth")
+	auth.POST("/login", handler.Login)
+	auth.POST("/signup", handler.Signup)
 
-    port := os.Getenv("PORT"); if port == "" {
-        port = "3001"
-    }
-    e.Logger.Fatal(e.Start(":" + port))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3001"
+	}
+	e.Logger.Fatal(e.Start(":" + port))
 }

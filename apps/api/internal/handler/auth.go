@@ -14,8 +14,8 @@ import (
 )
 
 type LoginDTO struct {
-	EmailOrUsername    string `json:"emailOrUsername" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	EmailOrUsername string `json:"emailOrUsername" validate:"required"`
+	Password        string `json:"password" validate:"required"`
 }
 
 type SignupDTO struct {
@@ -34,14 +34,16 @@ func Login(c echo.Context) error {
 	}
 
 	q := db.GetQueryClient()
-	userFromDB, err := q.GetUserByEmailOrUsername(context.Background(), user.EmailOrUsername); if err != nil {
-		if (err == pgx.ErrNoRows) {
+	userFromDB, err := q.GetUserByEmailOrUsername(context.Background(), user.EmailOrUsername)
+	if err != nil {
+		if err == pgx.ErrNoRows {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
 	}
 
-	passwordsMatch, err := argon2id.ComparePasswordAndHash(user.Password, userFromDB.Password); if err != nil {
+	passwordsMatch, err := argon2id.ComparePasswordAndHash(user.Password, userFromDB.Password)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
 	}
 
@@ -56,7 +58,8 @@ func Login(c echo.Context) error {
 		},
 	}
 
-	signedToken, err := utils.CreateToken(claims); if err != nil {
+	signedToken, err := utils.CreateToken(claims)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Couldn't issue token")
 	}
 
@@ -75,23 +78,25 @@ func Signup(c echo.Context) error {
 	}
 
 	q := db.GetQueryClient()
-	_, err := q.GetUserByEmail(context.Background(), user.Email); if err != nil && err != pgx.ErrNoRows {
+	_, err := q.GetUserByEmail(context.Background(), user.Email)
+	if err != nil && err != pgx.ErrNoRows {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
 	} else if err == nil {
 		return echo.NewHTTPError(http.StatusConflict, "A user with this email already exists")
 	}
 
-	hashedPassword, err := argon2id.CreateHash(user.Password, argon2id.DefaultParams); if err != nil {
+	hashedPassword, err := argon2id.CreateHash(user.Password, argon2id.DefaultParams)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
 	}
 	user.Password = hashedPassword
 
-
 	insertedUser, err := q.InsertUser(context.Background(), db.InsertUserParams{
 		Username: user.Username,
-		Email: user.Email,
+		Email:    user.Email,
 		Password: user.Password,
-	}); if err != nil {
+	})
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something went wrong")
 	}
 
