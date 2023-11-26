@@ -15,6 +15,10 @@ import { Input } from '@/components/ui/input';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { FormFields } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
+import { useMutation } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+import { setCookie } from 'cookies-next';
+import { api } from '@/lib/utils';
 
 const formSchema = z.object({
   emailOrUsername: z.string().min(1, {
@@ -27,6 +31,26 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+const login = async (formData: FormData) => {
+  const response = await fetch(`${api}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  });
+  const data = await response.json();
+
+  if (response.status !== 201) {
+    throw new Error(data.message);
+  }
+  setCookie('token', data.token, {
+    maxAge: 60 * 60,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
+};
+
 const UserLoginForm = () => {
   const { toast } = useToast();
 
@@ -38,8 +62,18 @@ const UserLoginForm = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (formData: FormData) => {
-    console.log(formData);
+  const { mutate: submitForm, isPending } = useMutation({
+    mutationFn: async (formData: FormData) => await login(formData),
+    onSuccess: () => {
+      toast({ title: 'Logged in successfully' });
+    },
+    onError: (error: Error) => {
+      toast({ variant: 'destructive', title: error.message });
+    },
+  });
+
+  const onSubmit: SubmitHandler<FormData> = (formData: FormData) => {
+    submitForm(formData);
   };
 
   return (
@@ -61,7 +95,13 @@ const UserLoginForm = () => {
             )}
           />
         ))}
-        <Button className="w-full">Log in</Button>
+        {isPending ? (
+          <Button className="w-full" disabled>
+            <Loader2 className="w-5 h-5" /> Logging in
+          </Button>
+        ) : (
+          <Button className="w-full">Log in</Button>
+        )}
       </form>
     </Form>
   );
