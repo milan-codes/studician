@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -24,6 +25,15 @@ func main() {
 
 	e := echo.New()
 	e.Validator = &utils.CustomValidator{Validator: validator.New()}
+
+	clientUrl := os.Getenv("CLIENT_URL")
+	if clientUrl == "" {
+		log.Fatal("CLIENT_URL is not set")
+	}
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{clientUrl},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "API is running")
