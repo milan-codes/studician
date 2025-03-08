@@ -1,6 +1,6 @@
 import { verify } from '@node-rs/argon2';
 import { redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import type { Actions, PageServerLoad } from './$types';
@@ -20,9 +20,12 @@ export const actions: Actions = {
 	default: async (event) => {
 		const form = await superValidate(event, zod(formSchema));
 		if (!form.valid) return message(form, 'Invalid form');
-		const { username, password } = form.data;
+		const { usernameOrEmail, password } = form.data;
 
-		const [user] = await db.select().from(userTable).where(eq(userTable.username, username));
+		const [user] = await db
+			.select()
+			.from(userTable)
+			.where(or(eq(userTable.username, usernameOrEmail), eq(userTable.email, usernameOrEmail)));
 		if (!user) return message(form, 'Incorrect username or password', { status: 422 });
 
 		const validPassword = await verify(user.password, password);

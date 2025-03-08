@@ -28,11 +28,11 @@
 	<Card.Content>
 		<form method="POST" class="grid gap-4" use:enhance>
 			<div class="grid gap-2">
-				<Form.Field {form} name="username">
+				<Form.Field {form} name="usernameOrEmail">
 					<Form.Control>
 						{#snippet children({ props })}
-							<Form.Label>Username</Form.Label>
-							<Input {...props} bind:value={$formData.username} />
+							<Form.Label>Username or email</Form.Label>
+							<Input {...props} bind:value={$formData.usernameOrEmail} />
 						{/snippet}
 					</Form.Control>
 					<Form.FieldErrors />
