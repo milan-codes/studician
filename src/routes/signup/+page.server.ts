@@ -4,10 +4,10 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { formSchema } from './schema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
-import * as table from '$lib/server/db/schema';
 import * as auth from '$lib/server/auth';
 import { eq } from 'drizzle-orm';
 import { hash } from '@node-rs/argon2';
+import { user as userTable } from '$lib/server/db/schemas/user';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -24,16 +24,16 @@ export const actions: Actions = {
 
 		const [emailFound] = await db
 			.select()
-			.from(table.user)
-			.where(eq(table.user.email, email))
+			.from(userTable)
+			.where(eq(userTable.email, email))
 			.limit(1);
 
 		if (emailFound) return message(form, 'A user with this email already exists', { status: 422 });
 
 		const [usernameFound] = await db
 			.select()
-			.from(table.user)
-			.where(eq(table.user.username, username))
+			.from(userTable)
+			.where(eq(userTable.username, username))
 			.limit(1);
 
 		if (usernameFound)
@@ -42,7 +42,7 @@ export const actions: Actions = {
 		const passwordHash = await hash(password);
 
 		const [user] = await db
-			.insert(table.user)
+			.insert(userTable)
 			.values({ email, username, password: passwordHash })
 			.returning();
 
