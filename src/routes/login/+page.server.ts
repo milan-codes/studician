@@ -25,7 +25,7 @@ export const actions: Actions = {
 		const [user] = await db.select().from(table.user).where(eq(table.user.username, username));
 		if (!user) return fail(400, { message: 'Incorrect username or password' });
 
-		const validPassword = await verify(user.passwordHash, password);
+		const validPassword = await verify(user.password, password);
 		if (!validPassword) return fail(400, { message: 'Incorrect username or password' });
 
 		const sessionToken = auth.generateSessionToken();
