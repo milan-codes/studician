@@ -6,11 +6,15 @@
 	import { formSchema, type FormSchema } from './schema';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { dev } from '$app/environment';
+	import { toast } from 'svelte-sonner';
 
 	let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 
 	const form = superForm(data.form, {
-		validators: zodClient(formSchema)
+		validators: zodClient(formSchema),
+		onUpdate: ({ form, result }) => {
+			if (result.status === 422) toast.error(form.message);
+		}
 	});
 
 	const { form: formData, enhance } = form;

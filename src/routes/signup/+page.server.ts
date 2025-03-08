@@ -1,6 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { formSchema } from './schema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	default: async (event) => {
 		const form = await superValidate(event, zod(formSchema));
-		if (!form.valid) return fail(400, { form });
+		if (!form.valid) return message(form, 'Invalid form');
 		const { email, username, password } = form.data;
 
 		const [emailFound] = await db
@@ -28,7 +28,7 @@ export const actions: Actions = {
 			.where(eq(table.user.email, email))
 			.limit(1);
 
-		if (emailFound) return fail(422, { message: 'A user with this email already exists' });
+		if (emailFound) return message(form, 'A user with this email already exists', { status: 422 });
 
 		const [usernameFound] = await db
 			.select()
@@ -36,7 +36,8 @@ export const actions: Actions = {
 			.where(eq(table.user.username, username))
 			.limit(1);
 
-		if (usernameFound) return fail(422, { message: 'A user with this username already exists' });
+		if (usernameFound)
+			return message(form, 'A user with this username already exists', { status: 422 });
 
 		const passwordHash = await hash(password);
 
