@@ -56,6 +56,7 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"drizzle-orm": "^0.38.4",
-		"postgres": "^3.4.5"
+		"postgres": "^3.4.5",
+		"ulidx": "^2.4.1"
 	}
 }

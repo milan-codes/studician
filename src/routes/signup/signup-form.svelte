@@ -18,11 +18,22 @@
 
 <Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
-		<Card.Title class="text-2xl">Login</Card.Title>
-		<Card.Description>Enter your email below to login to your account</Card.Description>
+		<Card.Title class="text-2xl">Sign up</Card.Title>
+		<Card.Description>Sign up for an account</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<form method="POST" class="grid gap-4" use:enhance>
+			<div class="grid gap-2">
+				<Form.Field {form} name="email">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Email</Form.Label>
+							<Input {...props} type="email" bind:value={$formData.email} />
+						{/snippet}
+					</Form.Control>
+					<Form.FieldErrors />
+				</Form.Field>
+			</div>
 			<div class="grid gap-2">
 				<Form.Field {form} name="username">
 					<Form.Control>
@@ -45,12 +56,12 @@
 					<Form.FieldErrors />
 				</Form.Field>
 			</div>
-			<Form.Button class="w-full">Login</Form.Button>
+			<Form.Button class="w-full">Sign up</Form.Button>
 			<SuperDebug data={form.form} display={dev} />
 		</form>
 		<div class="mt-4 text-center text-sm">
-			Don't have an account?
-			<a href="/signup" class="underline"> Sign up </a>
+			Already have an account?
+			<a href="/login" class="underline"> Login </a>
 		</div>
 	</Card.Content>
 </Card.Root>
