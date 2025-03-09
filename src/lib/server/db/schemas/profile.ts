@@ -3,15 +3,15 @@ import { ulid } from 'ulidx';
 import { user } from './user';
 
 export const profile = pgTable('profile', {
-	id: text('id').primaryKey().$defaultFn(ulid),
-	userId: text('user_id')
+	id: text().primaryKey().$defaultFn(ulid),
+	userId: text()
 		.notNull()
 		.unique()
 		.references(() => user.id),
-	displayName: text('display_name'),
-	bio: text('bio'),
+	displayName: text(),
+	bio: text(),
 	verified: boolean().notNull().default(false),
-	complete: boolean('profile_complete').notNull().default(false),
+	complete: boolean().notNull().default(false),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp()
 		.notNull()
