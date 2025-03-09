@@ -8,11 +8,12 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { formSchema } from './schema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { user as userTable } from '$lib/server/db/schemas/user';
+import { profile as profileTable } from '$lib/server/db/schema';
 
 export const load: PageServerLoad = async (event) => {
-	if (event.locals.user) {
-		return redirect(302, '/profile');
-	}
+	if (event.locals.user && event.locals.profile?.complete) return redirect(302, '/profile');
+	else if (event.locals.user && !event.locals.profile?.complete)
+		return redirect(302, '/complete-profile');
 	return { form: await superValidate(zod(formSchema)) };
 };
 
@@ -22,19 +23,21 @@ export const actions: Actions = {
 		if (!form.valid) return message(form, 'Invalid form');
 		const { usernameOrEmail, password } = form.data;
 
-		const [user] = await db
+		const [userWithProfile] = await db
 			.select()
 			.from(userTable)
+			.leftJoin(profileTable, eq(userTable.id, profileTable.userId))
 			.where(or(eq(userTable.username, usernameOrEmail), eq(userTable.email, usernameOrEmail)));
-		if (!user) return message(form, 'Incorrect username or password', { status: 422 });
+		if (!userWithProfile) return message(form, 'Incorrect username or password', { status: 422 });
 
-		const validPassword = await verify(user.password, password);
+		const validPassword = await verify(userWithProfile.user.password, password);
 		if (!validPassword) return message(form, 'Incorrect username or password', { status: 422 });
 
 		const sessionToken = auth.generateSessionToken();
-		const session = await auth.createSession(sessionToken, user.id);
+		const session = await auth.createSession(sessionToken, userWithProfile.user.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		return redirect(302, '/profile');
+		if (userWithProfile.profile?.complete) return redirect(302, '/profile');
+		else return redirect(302, '/complete-profile');
 	}
 };

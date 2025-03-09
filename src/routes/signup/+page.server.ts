@@ -10,9 +10,9 @@ import { hash } from '@node-rs/argon2';
 import { user as userTable } from '$lib/server/db/schemas/user';
 
 export const load: PageServerLoad = async (event) => {
-	if (event.locals.user) {
-		return redirect(302, '/profile');
-	}
+	if (event.locals.user && event.locals.profile?.complete) return redirect(302, '/profile');
+	else if (event.locals.user && !event.locals.profile?.complete)
+		return redirect(302, '/complete-profile');
 	return { form: await superValidate(zod(formSchema)) };
 };
 
@@ -50,6 +50,6 @@ export const actions: Actions = {
 		const session = await auth.createSession(sessionToken, user.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		return redirect(307, '/profile');
+		return redirect(307, '/complete-profile');
 	}
 };
