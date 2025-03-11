@@ -37,7 +37,7 @@ export const actions: Actions = {
 		const session = await auth.createSession(sessionToken, userWithProfile.user.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		if (userWithProfile.profile?.complete) return redirect(302, '/profile');
+		if (userWithProfile.profile?.complete) return redirect(302, '/term');
 		else return redirect(302, '/complete-profile');
 	}
 };

@@ -8,7 +8,7 @@ import { profile as profileTable } from '$lib/server/db/schema';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) return redirect(302, '/login');
-	else if (event.locals.profile?.complete) return redirect(307, '/profile');
+	else if (event.locals.profile?.complete) return redirect(307, '/term');
 	return { form: await superValidate(zod(formSchema)) };
 };
 
@@ -28,6 +28,6 @@ export const actions: Actions = {
 			complete: true
 		});
 
-		return redirect(307, '/profile');
+		return redirect(307, '/term');
 	}
 };
