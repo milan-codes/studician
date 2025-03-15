@@ -4,13 +4,16 @@
 
 	// The `any` should be `Component` after lucide-svelte updates types
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let { items }: { items: { title: string; url: string; icon: any }[] } = $props();
+	let { items }: { items: { title: string; url: string; icon: any; isIndex?: boolean }[] } =
+		$props();
 </script>
 
 <Sidebar.Menu>
 	{#each items as item (item.title)}
+		{@const isActive =
+			(page.url.pathname.startsWith(item.url) && !item.isIndex) || page.url.pathname === item.url}
 		<Sidebar.MenuItem>
-			<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+			<Sidebar.MenuButton {isActive}>
 				{#snippet child({ props })}
 					<a href={item.url} {...props}>
 						<item.icon />
