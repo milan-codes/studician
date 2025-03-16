@@ -18,3 +18,36 @@ export function formatDate(
 
 	return date.toLocaleDateString(locale, options ?? defaultOptions);
 }
+
+export function generateCourseSchedule(
+	termStart: Date,
+	termEnd: Date,
+	dayOfWeek: number,
+	startTime: string,
+	lengthInMinutes: number,
+	recurrence: 'WEEKLY' | 'BIWEEKLY'
+) {
+	const courseClasses: { startTime: Date; endTime: Date }[] = [];
+	const [hours, minutes] = startTime.split(':').map(Number);
+
+	const currentDate = new Date(termStart);
+	currentDate.setHours(hours, minutes, 0, 0);
+
+	while (currentDate.getDay() !== dayOfWeek) currentDate.setDate(currentDate.getDate() + 1);
+
+	const recurrenceStep = recurrence === 'WEEKLY' ? 7 : 14;
+
+	while (currentDate <= termEnd) {
+		const endDateTime = new Date(currentDate);
+		endDateTime.setMinutes(endDateTime.getMinutes() + lengthInMinutes);
+
+		courseClasses.push({
+			startTime: new Date(currentDate),
+			endTime: endDateTime
+		});
+
+		currentDate.setDate(currentDate.getDate() + recurrenceStep);
+	}
+
+	return courseClasses;
+}

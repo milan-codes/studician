@@ -1,4 +1,5 @@
 export { course } from './schemas/course';
+export { courseSchedule } from './schemas/courseSchedule';
 export { profile } from './schemas/profile';
 export { session } from './schemas/session';
 export { term } from './schemas/term';
