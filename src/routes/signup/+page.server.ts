@@ -9,10 +9,7 @@ import { eq } from 'drizzle-orm';
 import { hash } from '@node-rs/argon2';
 import { user as userTable } from '$lib/server/db/schemas/user';
 
-export const load: PageServerLoad = async (event) => {
-	if (event.locals.user && event.locals.profile?.complete) return redirect(302, '/profile');
-	else if (event.locals.user && !event.locals.profile?.complete)
-		return redirect(302, '/complete-profile');
+export const load: PageServerLoad = async () => {
 	return { form: await superValidate(zod(formSchema)) };
 };
 

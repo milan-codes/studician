@@ -13,9 +13,7 @@ import { eq } from 'drizzle-orm';
 import { generateCourseSchedule } from '$lib/utils';
 import type { CourseSchedule } from '$lib/server/db/schemas/courseSchedule';
 
-export const load: PageServerLoad = async (event) => {
-	if (!event.locals.user) return redirect(302, '/login');
-	else if (!event.locals.profile?.complete) return redirect(302, '/complete-profile');
+export const load: PageServerLoad = async () => {
 	return { form: await superValidate(zod(formSchema)) };
 };
 

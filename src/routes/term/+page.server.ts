@@ -6,8 +6,6 @@ import { term } from '$lib/server/db/schema';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) return redirect(302, '/login');
-	else if (event.locals.user && !event.locals.profile?.complete)
-		return redirect(302, '/complete-profile');
 
 	const where = eq(term.userId, event.locals.user.id);
 	const orderBy = desc(term.createdAt);

@@ -5,8 +5,7 @@ import { term } from '$lib/server/db/schema';
 import { desc, eq } from 'drizzle-orm';
 
 export const load: LayoutServerLoad = async (event) => {
-	if (!event.locals.user) return redirect(302, '/login');
-	else if (!event.locals.profile?.complete) return redirect(302, '/complete-profile');
+	if (!event.locals.user || !event.locals.profile) return redirect(302, '/login');
 
 	const { id: userId, username } = event.locals.user;
 	const { displayName } = event.locals.profile;

@@ -10,10 +10,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { user as userTable } from '$lib/server/db/schemas/user';
 import { profile as profileTable } from '$lib/server/db/schema';
 
-export const load: PageServerLoad = async (event) => {
-	if (event.locals.user && event.locals.profile?.complete) return redirect(302, '/profile');
-	else if (event.locals.user && !event.locals.profile?.complete)
-		return redirect(302, '/complete-profile');
+export const load: PageServerLoad = async () => {
 	return { form: await superValidate(zod(formSchema)) };
 };
 
