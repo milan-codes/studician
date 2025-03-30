@@ -4,6 +4,7 @@
 	import { Plus } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 	import { cn } from '$lib/utils';
+	import TaskCard from './task-card.svelte';
 
 	let { data }: PageProps = $props();
 </script>
@@ -18,3 +19,8 @@
 	>
 </div>
 <Separator class="my-8" />
+<div class="grid gap-4">
+	{#each data.tasks as task}
+		<TaskCard {task} termId={data.activeTerm.id} />
+	{/each}
+</div>
