@@ -2,5 +2,6 @@ export { course } from './schemas/course';
 export { courseSchedule } from './schemas/courseSchedule';
 export { profile } from './schemas/profile';
 export { session } from './schemas/session';
+export { task, taskStatus } from './schemas/task';
 export { term } from './schemas/term';
 export { user } from './schemas/user';
