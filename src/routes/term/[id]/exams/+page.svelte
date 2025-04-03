@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 	import { cn } from '$lib/utils';
 	import { Separator } from '$lib/components/ui/separator';
+	import ExamCard from './exam-card.svelte';
 
 	let { data }: PageProps = $props();
 </script>
@@ -18,3 +19,8 @@
 	>
 </div>
 <Separator class="my-8" />
+<div class="grid gap-4">
+	{#each data.exams as exam}
+		<ExamCard {exam} termId={data.activeTerm.id} />
+	{/each}
+</div>
