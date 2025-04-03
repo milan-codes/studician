@@ -14,7 +14,7 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import type { Term } from '$lib/server/db/schemas/term';
-	import { BookText, LayoutList } from 'lucide-svelte';
+	import { BookOpenCheck, BookText, LayoutList } from 'lucide-svelte';
 
 	let {
 		ref = $bindable(null),
@@ -55,6 +55,11 @@
 				title: 'Tasks',
 				url: `/term/${activeTerm.id}/tasks`,
 				icon: LayoutList
+			},
+			{
+				title: 'Exams',
+				url: `/term/${activeTerm.id}/exams`,
+				icon: BookOpenCheck
 			}
 		],
 		navSecondary: [

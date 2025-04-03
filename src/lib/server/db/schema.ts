@@ -1,5 +1,6 @@
 export { course } from './schemas/course';
 export { courseSchedule } from './schemas/courseSchedule';
+export { exam } from './schemas/exam'
 export { profile } from './schemas/profile';
 export { session } from './schemas/session';
 export { task, taskStatus } from './schemas/task';
