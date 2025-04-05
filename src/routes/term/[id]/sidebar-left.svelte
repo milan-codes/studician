@@ -23,7 +23,7 @@
 		...restProps
 	}: ComponentProps<typeof Sidebar.Root> & { activeTerm: Term; terms: Term[] } = $props();
 
-	const data = {
+	const data = $derived({
 		navMain: [
 			{
 				title: 'Search',
@@ -80,7 +80,7 @@
 			}
 		],
 		favorites: []
-	};
+	});
 </script>
 
 <Sidebar.Root class="border-r-0" {...restProps}>
