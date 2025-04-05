@@ -3,6 +3,7 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { Term } from '$lib/server/db/schemas/term';
 	import { formatDate } from '$lib/utils';
+	import { Check } from 'lucide-svelte';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import Plus from 'lucide-svelte/icons/plus';
 
@@ -33,6 +34,9 @@
 				{#each terms as term, index}
 					<DropdownMenu.Item onSelect={() => (activeTerm = term)} class="gap-2 p-2">
 						<a href={`/term/${term.id}`} class="flex w-full items-center gap-2">
+							{#if activeTerm.id === term.id}
+								<Check />
+							{/if}
 							{formatDate(term.startDate)} - {formatDate(term.classEndDate)}
 							<DropdownMenu.Shortcut>⌘{index + 1}</DropdownMenu.Shortcut>
 						</a>
