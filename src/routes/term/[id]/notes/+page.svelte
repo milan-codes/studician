@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 	import { cn } from '$lib/utils';
 	import { Separator } from '$lib/components/ui/separator';
+	import NoteCard from './note-card.svelte';
 
 	let { data }: PageProps = $props();
 </script>
@@ -18,3 +19,8 @@
 	>
 </div>
 <Separator class="my-8" />
+<div class="grid gap-4">
+	{#each data.notes as note}
+		<NoteCard {note} termId={data.activeTerm.id} />
+	{/each}
+</div>
