@@ -32,7 +32,7 @@
 		orderedList: false,
 		bulletList: false
 	});
-	let { value = $bindable() }: { value: string } = $props();
+	let { value = $bindable(), disabled }: { value: string; disabled?: boolean } = $props();
 
 	$effect(() => {
 		if (editor) return;
@@ -77,54 +77,60 @@
 		<Toggle
 			pressed={isActive.h1}
 			onPressedChange={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-			><Heading1 /></Toggle
+			{disabled}><Heading1 /></Toggle
 		>
 		<Toggle
 			pressed={isActive.h2}
 			onPressedChange={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-			><Heading2 /></Toggle
+			{disabled}><Heading2 /></Toggle
 		>
 		<Toggle
 			pressed={isActive.h3}
 			onPressedChange={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-			><Heading3 /></Toggle
+			{disabled}><Heading3 /></Toggle
 		>
 		<Separator orientation="vertical" class="mx-2" />
 		<Toggle
 			pressed={isActive.bold}
-			onPressedChange={() => editor?.chain().focus().toggleBold().run()}><Bold /></Toggle
+			onPressedChange={() => editor?.chain().focus().toggleBold().run()}
+			{disabled}><Bold /></Toggle
 		>
 		<Toggle
 			pressed={isActive.italic}
 			onPressedChange={() => editor?.chain().focus().toggleItalic().run()}
+			{disabled}
 		>
 			<Italic />
 		</Toggle>
 		<Toggle
 			pressed={isActive.strike}
-			onPressedChange={() => editor?.chain().focus().toggleStrike().run()}><Strikethrough /></Toggle
+			onPressedChange={() => editor?.chain().focus().toggleStrike().run()}
+			{disabled}><Strikethrough /></Toggle
 		>
 		<Separator orientation="vertical" class="mx-2" />
 		<Toggle
 			pressed={isActive.codeBlock}
 			onPressedChange={() => editor?.chain().focus().toggleCodeBlock().run()}
+			{disabled}
 			><CodeXml />
 		</Toggle>
 		<Separator orientation="vertical" class="mx-2" />
 		<Toggle
 			pressed={isActive.blockquote}
-			onPressedChange={() => editor?.chain().focus().toggleBlockquote().run()}><Quote /></Toggle
+			onPressedChange={() => editor?.chain().focus().toggleBlockquote().run()}
+			{disabled}><Quote /></Toggle
 		>
 		<Separator orientation="vertical" class="mx-2" />
 		<Toggle
 			pressed={isActive.orderedList}
 			onPressedChange={() => editor?.chain().focus().toggleOrderedList().run()}
-			><ListOrdered /></Toggle
+			{disabled}><ListOrdered /></Toggle
 		>
 		<Toggle
 			pressed={isActive.bulletList}
-			onPressedChange={() => editor?.chain().focus().toggleBulletList().run()}><List /></Toggle
+			onPressedChange={() => editor?.chain().focus().toggleBulletList().run()}
+			{disabled}><List /></Toggle
 		>
 	</div>
 {/if}
-<div bind:this={element}></div>
+<div bind:this={element} class={disabled ? 'pointer-events-none' : 'pointer-events-auto'}></div>
