@@ -19,6 +19,15 @@ export function formatDate(
 	return date.toLocaleDateString(locale, options ?? defaultOptions);
 }
 
+export const formatTime = (date: string | Date | null) => {
+	const timeOptions = {
+		hour: '2-digit',
+		minute: '2-digit'
+	} as const;
+	if (typeof date === 'string') return new Date(date).toLocaleTimeString(undefined, timeOptions);
+	return date ? date.toLocaleTimeString(undefined, timeOptions) : '';
+};
+
 export function generateCourseSchedule(
 	termStart: Date,
 	termEnd: Date,

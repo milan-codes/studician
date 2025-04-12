@@ -1,4 +1,4 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { json, redirect, type Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth.js';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
@@ -28,6 +28,8 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	} else if (pathname.startsWith('/profile') || pathname.startsWith('/term')) {
 		if (!user) return redirect(302, '/login');
 		else if (!profile?.complete) return redirect(302, '/complete-profile');
+	} else if (pathname.startsWith('/api')) {
+		if (!user) return json({ message: 'You must be authorized to access this resource' }, { status: 401 })
 	}
 
 	return resolve(event);
