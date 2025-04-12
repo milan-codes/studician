@@ -10,6 +10,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import { cn } from '$lib/utils';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 
 	let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 
@@ -68,17 +69,15 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</div>
-	<div class="grid gap-4">
-		<Form.Field {form} name="description">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Description</Form.Label>
-					<Textarea {...props} bind:value={$formData.description} />
-				{/snippet}
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-	</div>
+	<Form.Field {form} name="description">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Description</Form.Label>
+				<Textarea {...props} bind:value={$formData.description} />
+			{/snippet}
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
 	<h3 class="text-md tracking-tight">Classes</h3>
 	{#each $formData.classes as _, index}
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-7">
@@ -177,6 +176,17 @@
 	{/each}
 	<Button type="button" variant="outline" onclick={() => addClass()}>Add class</Button>
 	<Separator class="my-8" />
+	<Form.Field {form} name="favorite">
+		<Form.Control>
+			{#snippet children({ props })}
+				<div class="flex items-center gap-2">
+					<Checkbox {...props} bind:checked={$formData.favorite} />
+					<Form.Label>Add to favorites</Form.Label>
+				</div>
+			{/snippet}
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
 	<Form.Button>Create course</Form.Button>
 	<SuperDebug data={form.form} display={dev} />
 </form>

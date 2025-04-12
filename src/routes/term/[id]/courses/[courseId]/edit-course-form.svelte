@@ -8,6 +8,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Button } from '$lib/components/ui/button';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 
 	let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 	let isEditing = $state(false);
@@ -53,6 +54,17 @@
 		</Form.Field>
 	</div>
 	<Separator class="my-8" />
+	<Form.Field {form} name="favorite">
+		<Form.Control>
+			{#snippet children({ props })}
+				<div class="flex items-center gap-2">
+					<Checkbox {...props} bind:checked={$formData.favorite} disabled={!isEditing} />
+					<Form.Label>Add to favorites</Form.Label>
+				</div>
+			{/snippet}
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
 	{#if isEditing}
 		<Form.Button>Update course</Form.Button>
 	{:else}

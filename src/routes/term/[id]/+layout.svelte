@@ -10,7 +10,7 @@
 </script>
 
 <Sidebar.Provider>
-	<SidebarLeft terms={data.terms} activeTerm={data.activeTerm} />
+	<SidebarLeft terms={data.terms} activeTerm={data.activeTerm} favorites={data.favorites} />
 	<Sidebar.Inset>
 		<header class="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
 			<div class="flex flex-1 items-center gap-2 px-3">

@@ -1,8 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { term } from '$lib/server/db/schema';
-import { desc, eq } from 'drizzle-orm';
+import { course, term } from '$lib/server/db/schema';
+import { and, asc, desc, eq } from 'drizzle-orm';
 
 export const load: LayoutServerLoad = async (event) => {
 	if (!event.locals.user || !event.locals.profile) return redirect(302, '/login');
@@ -17,5 +17,8 @@ export const load: LayoutServerLoad = async (event) => {
 	const activeTerm = terms.find((term) => term.id === event.params.id);
 	if (!activeTerm) return redirect(302, '/term');
 
-	return { terms, activeTerm, user: { username, name: displayName, avatar: '/' } };
+	const favoritesWhere = and(eq(course.favorite, true), eq(course.termId, activeTerm.id));
+	const favorites = await db.select().from(course).where(favoritesWhere).orderBy(asc(course.name));
+
+	return { terms, activeTerm, favorites, user: { username, name: displayName, avatar: '/' } };
 };

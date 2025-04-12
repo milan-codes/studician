@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { ulid } from 'ulidx';
 import { term } from './term';
 
@@ -10,6 +10,7 @@ export const course = pgTable('course', {
 	name: text().notNull(),
 	description: text(),
 	color: text().notNull(),
+	favorite: boolean().notNull().default(false),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp()
 		.notNull()

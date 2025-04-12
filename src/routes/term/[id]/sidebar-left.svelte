@@ -15,13 +15,19 @@
 	import type { ComponentProps } from 'svelte';
 	import type { Term } from '$lib/server/db/schemas/term';
 	import { BookOpenCheck, BookText, LayoutList, NotebookPen } from 'lucide-svelte';
+	import type { Course } from '$lib/server/db/schemas/course';
 
 	let {
 		ref = $bindable(null),
 		activeTerm,
 		terms,
+		favorites,
 		...restProps
-	}: ComponentProps<typeof Sidebar.Root> & { activeTerm: Term; terms: Term[] } = $props();
+	}: ComponentProps<typeof Sidebar.Root> & {
+		activeTerm: Term;
+		terms: Term[];
+		favorites: Course[];
+	} = $props();
 
 	const data = $derived({
 		navMain: [
@@ -83,8 +89,7 @@
 				url: '/help',
 				icon: MessageCircleQuestion
 			}
-		],
-		favorites: []
+		]
 	});
 </script>
 
@@ -94,7 +99,7 @@
 		<NavMain items={data.navMain} />
 	</Sidebar.Header>
 	<Sidebar.Content>
-		<NavFavorites favorites={data.favorites} />
+		<NavFavorites {favorites} />
 		<NavSecondary items={data.navSecondary} class="mt-auto" />
 	</Sidebar.Content>
 	<Sidebar.Rail />
