@@ -20,11 +20,11 @@
 				<div class="grid w-full">
 					<div class="flex items-center">
 						<Circle class="mr-1 h-4 w-4" fill={task.color} color={task.color} />
-						<Card.Title class="w-24 overflow-hidden text-ellipsis whitespace-nowrap text-sm"
+						<Card.Title class="w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm"
 							>{task.courseName}</Card.Title
 						>
 					</div>
-					<Card.Description class="w-24 overflow-hidden text-ellipsis text-sm">
+					<Card.Description class="w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
 						{task.name ?? 'No name provided'}
 					</Card.Description>
 				</div>
