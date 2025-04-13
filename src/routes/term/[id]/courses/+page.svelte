@@ -5,6 +5,7 @@
 	import type { PageProps } from './$types';
 	import CourseCard from './course-card.svelte';
 	import { cn } from '$lib/utils';
+	import SittingReading from '$lib/illustrations/sitting-reading.svg';
 
 	let { data }: PageProps = $props();
 </script>
@@ -24,8 +25,17 @@
 	>
 </div>
 <Separator class="my-8" />
-<div class="grid gap-4">
-	{#each data.courses as course}
-		<CourseCard {course} />
-	{/each}
-</div>
+{#if data.courses.length}
+	<div class="grid gap-4">
+		{#each data.courses as course}
+			<CourseCard {course} />
+		{/each}
+	</div>
+{:else}
+	<div class="my-4 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-16">
+		<div class="w-9/12 md:w-1/3">
+			<img src={SittingReading} alt="Illustration of a person sitting on a chair and reading" />
+		</div>
+		<p class="text-center">It looks like you don't have any courses. Create a new one!</p>
+	</div>
+{/if}

@@ -5,6 +5,7 @@
 	import { cn } from '$lib/utils';
 	import { Separator } from '$lib/components/ui/separator';
 	import NoteCard from './note-card.svelte';
+	import Clumsy from '$lib/illustrations/clumsy.svg';
 
 	let { data }: PageProps = $props();
 </script>
@@ -23,8 +24,17 @@
 	>
 </div>
 <Separator class="my-8" />
-<div class="grid gap-4">
-	{#each data.notes as note}
-		<NoteCard {note} termId={data.activeTerm.id} />
-	{/each}
-</div>
+{#if data.notes.length}
+	<div class="grid gap-4">
+		{#each data.notes as note}
+			<NoteCard {note} termId={data.activeTerm.id} />
+		{/each}
+	</div>
+{:else}
+	<div class="my-4 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-16">
+		<div class="w-9/12 md:w-1/3">
+			<img src={Clumsy} alt="Illustration of a person slipping and throwing their papers" />
+		</div>
+		<p class="text-center">It looks like you don't have any notes. Create a new one!</p>
+	</div>
+{/if}

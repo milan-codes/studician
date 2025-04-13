@@ -5,6 +5,7 @@
 	import type { PageProps } from './$types';
 	import { cn } from '$lib/utils';
 	import TaskCard from './task-card.svelte';
+	import ReadingSide from '$lib/illustrations/reading-side.svg';
 
 	let { data }: PageProps = $props();
 </script>
@@ -23,8 +24,17 @@
 	>
 </div>
 <Separator class="my-8" />
-<div class="grid gap-4">
-	{#each data.tasks as task}
-		<TaskCard {task} termId={data.activeTerm.id} />
-	{/each}
-</div>
+{#if data.tasks.length}
+	<div class="grid gap-4">
+		{#each data.tasks as task}
+			<TaskCard {task} termId={data.activeTerm.id} />
+		{/each}
+	</div>
+{:else}
+	<div class="my-4 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-16">
+		<div class="w-9/12 md:w-1/3">
+			<img src={ReadingSide} alt="Illustration of a person sitting and reading" />
+		</div>
+		<p class="text-center">It looks like you don't have any tasks. Create a new one!</p>
+	</div>
+{/if}

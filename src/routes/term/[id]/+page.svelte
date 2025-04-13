@@ -37,7 +37,7 @@
 {#if isOffday}
 	<div class="my-4 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-16">
 		<div class="w-9/12 md:w-1/3">
-			<img src={Chilling} alt="Illustration of someone resting" />
+			<img src={Chilling} alt="Illustration of a person resting" />
 		</div>
 		<p class="text-center">
 			It looks like you don't have anything planned for today. Enjoy your rest!
