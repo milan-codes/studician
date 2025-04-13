@@ -6,6 +6,10 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
+<svelte:head>
+	<title>New course</title>
+</svelte:head>
+
 <div class="flex items-center justify-between">
 	<div class="space-y-0.5">
 		<h2 class="text-2xl font-bold tracking-tight">Create new course</h2>

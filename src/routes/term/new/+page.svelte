@@ -5,6 +5,10 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
+<svelte:head>
+	<title>New term</title>
+</svelte:head>
+
 <div class="flex h-screen w-full items-center justify-center px-4">
 	<AddSemesterForm {data} />
 </div>

@@ -9,6 +9,10 @@
 	let { data }: PageProps = $props();
 </script>
 
+<svelte:head>
+	<title>Notes</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
 	<div class="space-y-0.5">
 		<h2 class="text-2xl font-bold tracking-tight">Notes</h2>
