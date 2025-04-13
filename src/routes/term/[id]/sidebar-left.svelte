@@ -14,7 +14,7 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import type { Term } from '$lib/server/db/schemas/term';
-	import { BookOpenCheck, BookText, LayoutList, NotebookPen } from 'lucide-svelte';
+	import { BookOpenCheck, BookText, CalendarDays, LayoutList, NotebookPen } from 'lucide-svelte';
 	import type { Course } from '$lib/server/db/schemas/course';
 
 	let {
@@ -71,6 +71,11 @@
 				title: 'Notes',
 				url: `/term/${activeTerm.id}/notes`,
 				icon: NotebookPen
+			},
+			{
+				title: 'Activities',
+				url: `/term/${activeTerm.id}/activities`,
+				icon: CalendarDays
 			}
 		],
 		navSecondary: [
