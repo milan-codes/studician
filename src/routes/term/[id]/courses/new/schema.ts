@@ -8,7 +8,7 @@ export const formSchema = z.object({
 	classes: z.array(
 		z.object({
 			name: z.string().trim().min(1, { message: 'Name cannot be empty' }),
-			dayOfWeek: z.string().trim().length(1, { message: 'Day of week must be between 0 and 6' }),
+			dayOfWeek: z.string().trim().length(1, { message: 'Day of week must be a valid day' }),
 			time: z.string().trim().min(1, { message: 'Time cannot be empty' }),
 			length: z
 				.number({ invalid_type_error: 'Length cannot be empty' })
