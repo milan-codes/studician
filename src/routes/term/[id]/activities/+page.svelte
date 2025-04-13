@@ -3,7 +3,9 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Plus } from 'lucide-svelte';
 	import type { PageProps } from '../activities/$types';
+	import ActivityCard from './new/activity-card.svelte';
 	import { cn } from '$lib/utils';
+	import RollerSkating from '$lib/illustrations/roller-skating.svg';
 
 	let { data }: PageProps = $props();
 </script>
@@ -23,3 +25,17 @@
 	>
 </div>
 <Separator class="my-8" />
+{#if data.activities.length}
+	<div class="grid gap-4">
+		{#each data.activities as activity}
+			<ActivityCard {activity} />
+		{/each}
+	</div>
+{:else}
+	<div class="my-4 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-16">
+		<div class="w-9/12 md:w-1/3">
+			<img src={RollerSkating} alt="Illustration of a person roller skating" />
+		</div>
+		<p class="text-center">It looks like you don't have any activities. Create a new one!</p>
+	</div>
+{/if}
