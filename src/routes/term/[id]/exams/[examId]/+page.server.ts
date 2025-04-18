@@ -44,7 +44,7 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	default: async (event) => {
+	update: async (event) => {
 		const userId = event.locals.user?.id;
 		if (!userId) return redirect(302, '/login');
 
@@ -62,5 +62,14 @@ export const actions: Actions = {
 		await db.update(examTable).set(parsedExam).where(where);
 
 		return redirect(302, `/term/${termId}/exams`);
+	},
+	delete: async (event) => {
+		const userId = event.locals.user?.id;
+		if (!userId) return redirect(302, '/login');
+
+		const { examId } = event.params;
+
+		const where = eq(examTable.id, examId);
+		await db.delete(examTable).where(where);
 	}
 };

@@ -26,7 +26,7 @@
 	const { form: formData, enhance } = form;
 </script>
 
-<form method="POST" class="grid gap-4" use:enhance>
+<form method="POST" action="?/update" class="grid gap-4" use:enhance>
 	<Form.Field {form} name="courseId">
 		<Form.Control>
 			{#snippet children({ props })}
