@@ -2,16 +2,22 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { Exam } from '$lib/server/db/schemas/exam';
 	import { formatDate } from '$lib/utils';
-	import { Circle } from 'lucide-svelte';
+	import { CheckCheck, Circle } from 'lucide-svelte';
 
 	let { exam, termId }: { exam: Exam & { color: string }; termId: string } = $props();
+
+	let isPastExam = $derived(new Date(exam.date) < new Date());
 </script>
 
 <a href={`/term/${termId}/exams/${exam.id}`}>
 	<Card.Root class="transition-all hover:bg-muted">
 		<Card.Header class="flex flex-row items-center justify-between gap-4 space-y-0">
 			<div class="space-y-2">
-				<Card.Title>{exam.name}</Card.Title>
+				{#if isPastExam}
+					<Card.Title class="flex items-center gap-2"><CheckCheck /> {exam.name}</Card.Title>
+				{:else}
+					<Card.Title>{exam.name}</Card.Title>
+				{/if}
 				<Card.Description>
 					{exam.description ?? 'No description provided'}
 				</Card.Description>
