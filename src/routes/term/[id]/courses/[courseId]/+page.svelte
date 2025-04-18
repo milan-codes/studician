@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
 	import type { PageData } from './$types';
+	import DeleteCourseDialog from './delete-course-dialog.svelte';
 	import EditCourseForm from './edit-course-form.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -18,3 +19,5 @@
 </div>
 <Separator class="my-4" />
 <EditCourseForm {data} />
+<Separator class="my-4" />
+<DeleteCourseDialog />

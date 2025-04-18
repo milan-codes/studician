@@ -1,7 +1,14 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { course as courseTable, term as termTable } from '$lib/server/db/schema';
+import {
+	courseSchedule as courseScheduleTable,
+	course as courseTable,
+	exam as examTable,
+	note as noteTable,
+	task as taskTable,
+	term as termTable
+} from '$lib/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -33,7 +40,7 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	default: async (event) => {
+	update: async (event) => {
 		const userId = event.locals.user?.id;
 		if (!userId) return redirect(302, '/login');
 
@@ -51,5 +58,27 @@ export const actions: Actions = {
 		await db.update(courseTable).set(parsedCourse).where(where);
 
 		return redirect(302, `/term/${termId}/courses`);
+	},
+	delete: async (event) => {
+		const userId = event.locals.user?.id;
+		if (!userId) return redirect(302, '/login');
+
+		const { courseId } = event.params;
+
+		await db.transaction(async (tx) => {
+			const taskWhere = eq(taskTable.courseId, courseId);
+			const examWhere = eq(examTable.courseId, courseId);
+			const noteWhere = eq(noteTable.courseId, courseId);
+			const courseScheduleWhere = eq(courseScheduleTable.courseId, courseId);
+			const courseWhere = eq(courseTable.id, courseId);
+
+			await Promise.all([
+				tx.delete(taskTable).where(taskWhere),
+				tx.delete(examTable).where(examWhere),
+				tx.delete(noteTable).where(noteWhere),
+				tx.delete(courseScheduleTable).where(courseScheduleWhere),
+				tx.delete(courseTable).where(courseWhere)
+			]);
+		});
 	}
 };
