@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { Task } from '$lib/server/db/schemas/task';
 	import { formatDate } from '$lib/utils';
-	import { Circle } from 'lucide-svelte';
+	import { CheckCheck, Circle } from 'lucide-svelte';
 
 	let { task, termId }: { task: Task & { color: string }; termId: string } = $props();
 </script>
@@ -11,7 +11,11 @@
 	<Card.Root class="transition-all hover:bg-muted">
 		<Card.Header class="flex flex-row items-center justify-between gap-4 space-y-0">
 			<div class="space-y-2">
-				<Card.Title>{task.name}</Card.Title>
+				{#if task.status === 'DONE'}
+					<Card.Title class="flex items-center gap-2"><CheckCheck /> {task.name}</Card.Title>
+				{:else}
+					<Card.Title>{task.name}</Card.Title>
+				{/if}
 				<Card.Description>
 					{task.description ?? 'No description provided'}
 				</Card.Description>

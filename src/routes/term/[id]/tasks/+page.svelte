@@ -8,6 +8,9 @@
 	import ReadingSide from '$lib/illustrations/reading-side.svg';
 
 	let { data }: PageProps = $props();
+
+	let tasksTodo = $derived(data.tasks.filter((task) => task.status === 'TODO'));
+	let tasksDone = $derived(data.tasks.filter((task) => task.status === 'DONE'));
 </script>
 
 <svelte:head>
@@ -24,9 +27,9 @@
 	>
 </div>
 <Separator class="my-8" />
-{#if data.tasks.length}
+{#if tasksTodo.length}
 	<div class="grid gap-4">
-		{#each data.tasks as task}
+		{#each tasksTodo as task}
 			<TaskCard {task} termId={data.activeTerm.id} />
 		{/each}
 	</div>
@@ -37,4 +40,11 @@
 		</div>
 		<p class="text-center">It looks like you don't have any tasks. Create a new one!</p>
 	</div>
+{/if}
+
+{#if tasksDone.length}
+	<Separator />
+	{#each tasksDone as task}
+		<TaskCard {task} termId={data.activeTerm.id} />
+	{/each}
 {/if}

@@ -94,6 +94,23 @@
 			{/snippet}
 		</Form.Control>
 	</Form.Field>
+	<Form.Field {form} name="status">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Status</Form.Label>
+				<select
+					{...props}
+					class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+					bind:value={$formData.status}
+					disabled={!isEditing}
+				>
+					<option value="TODO">Todo</option>
+					<option value="DONE">Done</option>
+				</select>
+			{/snippet}
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
 	{#if isEditing}
 		<Form.Button>Update task</Form.Button>
 	{:else}
