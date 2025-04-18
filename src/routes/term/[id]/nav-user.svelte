@@ -79,8 +79,12 @@
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Item>
-					<LogOut />
-					Log out
+					<form method="POST" action="/logout" class="w-full">
+						<button class="flex w-full items-center gap-2">
+							<LogOut />
+							Log out
+						</button>
+					</form>
 				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
