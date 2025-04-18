@@ -15,24 +15,24 @@ export const GET: RequestHandler = async (event) => {
 
 	const date = event.url.searchParams.get('date');
 	const termId = event.url.searchParams.get('termId');
-	if (!date || !termId) return json({ message: 'Bad request' }, { status: 400 });
+	if (!termId) return json({ message: 'Bad request' }, { status: 400 });
 
 	const selectedDate = date;
 
 	const classesWhere = and(
-		sql`${courseSchedule.startTime}::date = ${selectedDate}::date`,
+		date ? sql`${courseSchedule.startTime}::date = ${selectedDate}::date` : undefined,
 		eq(course.termId, termId),
 		eq(term.userId, event.locals.user.id)
 	);
 
 	const tasksWhere = and(
-		sql`${task.dueDate}::date = ${selectedDate}::date`,
+		date ? sql`${task.dueDate}::date = ${selectedDate}::date` : undefined,
 		eq(course.termId, termId),
 		eq(term.userId, event.locals.user.id)
 	);
 
 	const examsWhere = and(
-		sql`${exam.date}::date = ${selectedDate}::date`,
+		date ? sql`${exam.date}::date = ${selectedDate}::date` : undefined,
 		eq(course.termId, termId),
 		eq(term.userId, event.locals.user.id)
 	);

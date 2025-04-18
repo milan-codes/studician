@@ -57,6 +57,7 @@
 		"zod": "^3.24.2"
 	},
 	"dependencies": {
+		"@event-calendar/svelte": "^5.0.0-alpha.3",
 		"@fontsource-variable/roboto": "^5.2.5",
 		"@node-rs/argon2": "^2.0.2",
 		"@oslojs/crypto": "^1.0.1",

@@ -48,6 +48,11 @@
 				isIndex: true
 			},
 			{
+				title: 'Calendar',
+				url: `/term/${activeTerm.id}/calendar`,
+				icon: Calendar
+			},
+			{
 				title: 'Inbox',
 				url: `/term/${activeTerm.id}/inbox`,
 				icon: Inbox
@@ -79,11 +84,6 @@
 			}
 		],
 		navSecondary: [
-			{
-				title: 'Calendar',
-				url: '/calendar',
-				icon: Calendar
-			},
 			{
 				title: 'Settings',
 				url: '/settings',

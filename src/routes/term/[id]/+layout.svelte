@@ -5,6 +5,7 @@
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { LayoutProps } from './$types';
+	import { page } from '$app/state';
 
 	let { data, children }: LayoutProps = $props();
 </script>
@@ -12,7 +13,7 @@
 <Sidebar.Provider>
 	<SidebarLeft terms={data.terms} activeTerm={data.activeTerm} favorites={data.favorites} />
 	<Sidebar.Inset>
-		<header class="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
+		<header class="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 bg-background">
 			<div class="flex flex-1 items-center gap-2 px-3">
 				<Sidebar.Trigger />
 				<Separator orientation="vertical" class="mr-2 h-4" />
@@ -29,5 +30,7 @@
 			{@render children()}
 		</div>
 	</Sidebar.Inset>
-	<SidebarRight user={data.user} />
+	{#if !page.url.pathname.endsWith('/calendar')}
+		<SidebarRight user={data.user} />
+	{/if}
 </Sidebar.Provider>
