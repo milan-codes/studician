@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
 	import type { PageData } from './$types';
+	import DeleteTaskDialog from './delete-task-dialog.svelte';
 	import EditTaskForm from './edit-task-form.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -18,3 +19,5 @@
 </div>
 <Separator class="my-4" />
 <EditTaskForm {data} />
+<Separator class="my-4" />
+<DeleteTaskDialog />
