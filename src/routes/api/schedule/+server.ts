@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { course, courseSchedule, exam, task, term } from '$lib/server/db/schema';
-import { and, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, asc, eq, getTableColumns, sql } from 'drizzle-orm';
 
 export const GET: RequestHandler = async (event) => {
 	if (!event.locals.user)
@@ -43,19 +43,22 @@ export const GET: RequestHandler = async (event) => {
 			.from(courseSchedule)
 			.innerJoin(course, eq(course.id, courseSchedule.courseId))
 			.innerJoin(term, eq(term.id, course.termId))
-			.where(classesWhere),
+			.where(classesWhere)
+			.orderBy(asc(courseSchedule.startTime), asc(course.name)),
 		db
 			.select({ ...getTableColumns(task), courseName: course.name, color: course.color })
 			.from(task)
 			.innerJoin(course, eq(course.id, task.courseId))
 			.innerJoin(term, eq(term.id, course.termId))
-			.where(tasksWhere),
+			.where(tasksWhere)
+			.orderBy(asc(task.dueDate), asc(task.name)),
 		db
 			.select({ ...getTableColumns(exam), courseName: course.name, color: course.color })
 			.from(exam)
 			.innerJoin(course, eq(course.id, exam.courseId))
 			.innerJoin(term, eq(term.id, course.termId))
 			.where(examsWhere)
+			.orderBy(asc(exam.date), asc(exam.name))
 	]);
 
 	const schedule = {
