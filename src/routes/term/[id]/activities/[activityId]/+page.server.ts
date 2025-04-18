@@ -32,7 +32,7 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	default: async (event) => {
+	update: async (event) => {
 		const userId = event.locals.user?.id;
 		if (!userId) return redirect(302, '/login');
 
@@ -50,5 +50,14 @@ export const actions: Actions = {
 		await db.update(activityTable).set(parsedActivity).where(where);
 
 		return redirect(302, `/term/${termId}/activities`);
+	},
+	delete: async (event) => {
+		const userId = event.locals.user?.id;
+		if (!userId) return redirect(302, '/login');
+
+		const { activityId } = event.params;
+
+		const where = eq(activityTable.id, activityId);
+		await db.delete(activityTable).where(where);
 	}
 };
