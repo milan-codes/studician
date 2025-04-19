@@ -69,3 +69,44 @@ export const GET: RequestHandler = async (event) => {
 
 	return json({ schedule });
 };
+
+export const PUT: RequestHandler = async (event) => {
+	const { id, start, end, type } = await event.request.json();
+
+	if (!id) return json({ message: 'Id is required' }, { status: 400 });
+	if (typeof id !== 'string') return json({ message: 'Id must be a string' }, { status: 400 });
+
+	if (!start) return json({ message: 'Start is required' }, { status: 400 });
+	if (typeof start !== 'string')
+		return json({ message: 'Start must be a valid date string' }, { status: 400 });
+
+	if (!end) return json({ message: 'End is required' }, { status: 400 });
+	if (typeof end !== 'string')
+		return json({ message: 'End must be a valid date string' }, { status: 400 });
+
+	if (!type) return json({ message: 'Type is required' }, { status: 400 });
+	if (type !== 'class' && type !== 'task' && type !== 'exam')
+		return json({ message: 'Type must be either class, task or exam' }, { status: 400 });
+
+	if (type === 'class') {
+		const courseScheduleWhere = eq(courseSchedule.id, id);
+		await db
+			.update(courseSchedule)
+			.set({ startTime: new Date(start), endTime: new Date(end) })
+			.where(courseScheduleWhere);
+	} else if (type === 'task') {
+		const taskWhere = eq(task.id, id);
+		await db
+			.update(task)
+			.set({ dueDate: new Date(start) })
+			.where(taskWhere);
+	} else {
+		const examWhere = eq(exam.id, id);
+		await db
+			.update(exam)
+			.set({ date: new Date(start) })
+			.where(examWhere);
+	}
+
+	return new Response(null, { status: 204 });
+};
