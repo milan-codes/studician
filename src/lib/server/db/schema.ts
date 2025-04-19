@@ -1,4 +1,5 @@
 export { activity } from './schemas/activity';
+export { activitySchedule } from './schemas/activitySchedule';
 export { course } from './schemas/course';
 export { courseSchedule } from './schemas/courseSchedule';
 export { exam } from './schemas/exam';

@@ -60,3 +60,22 @@ export function generateCourseSchedule(
 
 	return courseClasses;
 }
+
+export function generateActivitySchedule(startTime: Date, endTime: Date, until: Date) {
+	const result = [];
+
+	const currentStart = new Date(startTime);
+	const currentEnd = new Date(endTime);
+
+	while (currentStart <= until) {
+		result.push({
+			startTime: new Date(currentStart),
+			endTime: new Date(currentEnd)
+		});
+
+		currentStart.setDate(currentStart.getDate() + 7);
+		currentEnd.setDate(currentEnd.getDate() + 7);
+	}
+
+	return result;
+}

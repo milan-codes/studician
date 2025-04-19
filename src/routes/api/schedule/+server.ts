@@ -1,7 +1,15 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
-import { course, courseSchedule, exam, task, term } from '$lib/server/db/schema';
+import {
+	activity,
+	activitySchedule,
+	course,
+	courseSchedule,
+	exam,
+	task,
+	term
+} from '$lib/server/db/schema';
 import { and, asc, eq, getTableColumns, sql } from 'drizzle-orm';
 
 export const GET: RequestHandler = async (event) => {
@@ -37,7 +45,13 @@ export const GET: RequestHandler = async (event) => {
 		eq(term.userId, event.locals.user.id)
 	);
 
-	const [classes, tasks, exams] = await Promise.all([
+	const activityScheduleWhere = and(
+		date ? sql`${activitySchedule.startTime}::date = ${selectedDate}::date` : undefined,
+		eq(activity.termId, termId),
+		eq(term.userId, event.locals.user.id)
+	);
+
+	const [classes, tasks, exams, activities] = await Promise.all([
 		db
 			.select({ ...getTableColumns(courseSchedule), courseName: course.name, color: course.color })
 			.from(courseSchedule)
@@ -58,13 +72,25 @@ export const GET: RequestHandler = async (event) => {
 			.innerJoin(course, eq(course.id, exam.courseId))
 			.innerJoin(term, eq(term.id, course.termId))
 			.where(examsWhere)
-			.orderBy(asc(exam.date), asc(exam.name))
+			.orderBy(asc(exam.date), asc(exam.name)),
+		db
+			.select({
+				...getTableColumns(activitySchedule),
+				activityName: activity.name,
+				color: activity.color
+			})
+			.from(activitySchedule)
+			.innerJoin(activity, eq(activity.id, activitySchedule.activityId))
+			.innerJoin(term, eq(term.id, activity.termId))
+			.where(activityScheduleWhere)
+			.orderBy(asc(activitySchedule.startTime), asc(activity.name))
 	]);
 
 	const schedule = {
 		classes,
 		tasks,
-		exams
+		exams,
+		activities
 	};
 
 	return json({ schedule });
@@ -85,8 +111,8 @@ export const PUT: RequestHandler = async (event) => {
 		return json({ message: 'End must be a valid date string' }, { status: 400 });
 
 	if (!type) return json({ message: 'Type is required' }, { status: 400 });
-	if (type !== 'class' && type !== 'task' && type !== 'exam')
-		return json({ message: 'Type must be either class, task or exam' }, { status: 400 });
+	if (type !== 'class' && type !== 'task' && type !== 'exam' && type !== 'activity')
+		return json({ message: 'Type must be either class, task, exam or activity' }, { status: 400 });
 
 	if (type === 'class') {
 		const courseScheduleWhere = eq(courseSchedule.id, id);
@@ -100,12 +126,18 @@ export const PUT: RequestHandler = async (event) => {
 			.update(task)
 			.set({ dueDate: new Date(start) })
 			.where(taskWhere);
-	} else {
+	} else if (type === 'exam') {
 		const examWhere = eq(exam.id, id);
 		await db
 			.update(exam)
 			.set({ date: new Date(start) })
 			.where(examWhere);
+	} else {
+		const activityScheduleWhere = eq(activitySchedule.id, id);
+		await db
+			.update(activitySchedule)
+			.set({ startTime: new Date(start), endTime: new Date(end) })
+			.where(activityScheduleWhere);
 	}
 
 	return new Response(null, { status: 204 });
