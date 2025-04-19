@@ -45,7 +45,8 @@
 		dayMaxEvents: true,
 		nowIndicator: true,
 		height: '80vh',
-		scrollTime: '06:00:00'
+		scrollTime: '06:00:00',
+		slotDuration: '00:15:00'
 	});
 </script>
 
