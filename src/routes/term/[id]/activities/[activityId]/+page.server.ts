@@ -1,7 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { activity as activityTable, term as termTable } from '$lib/server/db/schema';
+import {
+	activitySchedule as activityScheduleTable,
+	activity as activityTable,
+	term as termTable
+} from '$lib/server/db/schema';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -57,7 +61,12 @@ export const actions: Actions = {
 
 		const { activityId } = event.params;
 
-		const where = eq(activityTable.id, activityId);
-		await db.delete(activityTable).where(where);
+		await db.transaction(async (tx) => {
+			const activityScheduleWhere = eq(activityScheduleTable.activityId, activityId);
+			await tx.delete(activityScheduleTable).where(activityScheduleWhere);
+
+			const activityWhere = eq(activityTable.id, activityId);
+			await tx.delete(activityTable).where(activityWhere);
+		});
 	}
 };
