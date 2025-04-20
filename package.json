@@ -66,6 +66,7 @@
 		"@tiptap/core": "^2.11.7",
 		"@tiptap/pm": "^2.11.7",
 		"@tiptap/starter-kit": "^2.11.7",
+		"change-case": "^5.4.4",
 		"drizzle-orm": "^0.38.4",
 		"lucide-svelte": "^0.479.0",
 		"postgres": "^3.4.5",
