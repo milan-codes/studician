@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import humanizeDuration from 'humanize-duration';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -79,3 +80,33 @@ export function generateActivitySchedule(startTime: Date, endTime: Date, until: 
 
 	return result;
 }
+
+export function getDateNDaysAgo(n: number, date?: Date, setToMidnight?: boolean): Date {
+	const baseDate = date ? new Date(date) : new Date();
+	const pastDate = new Date(baseDate);
+	pastDate.setDate(baseDate.getDate() - n);
+	if (setToMidnight) pastDate.setHours(0, 0, 0, 0);
+	return pastDate;
+}
+
+export const getTimeElapsed = (startDate: Date, endDate: Date | null) => {
+	const start = new Date(startDate);
+	const end = endDate ? new Date(endDate) : new Date();
+	start.setSeconds(0, 0);
+	end.setSeconds(0, 0);
+	return Math.abs(end.getTime() - start.getTime());
+};
+
+export const getHumanizedTimeElapsed = (
+	startDate: Date,
+	endDate: Date | null,
+	options?: humanizeDuration.Options
+) => {
+	const timeElapsed = getTimeElapsed(startDate, endDate);
+	const humanizeDurationOptions = options ?? {
+		language: 'en',
+		round: true,
+		units: ['d']
+	};
+	return humanizeDuration(timeElapsed, humanizeDurationOptions);
+};

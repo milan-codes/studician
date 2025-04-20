@@ -4,6 +4,7 @@ export { course } from './schemas/course';
 export { courseSchedule } from './schemas/courseSchedule';
 export { exam } from './schemas/exam';
 export { note } from './schemas/note';
+export { notification, notificationType } from './schemas/notification';
 export { profile } from './schemas/profile';
 export { session } from './schemas/session';
 export { task, taskStatus } from './schemas/task';

@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { course as courseTable } from '$lib/server/db/schema';
+import { course as courseTable, notification } from '$lib/server/db/schema';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -10,6 +10,7 @@ import type { Actions } from './$types';
 import { message } from 'sveltekit-superforms';
 import { exam as examTable } from '$lib/server/db/schema';
 import { term as termTable } from '$lib/server/db/schema';
+import { getDateNDaysAgo } from '$lib/utils';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user || !event.locals.profile) return redirect(302, '/login');
@@ -58,8 +59,16 @@ export const actions: Actions = {
 			description: form.data.description ? form.data.description : null
 		};
 
-		const where = and(eq(examTable.id, examId));
-		await db.update(examTable).set(parsedExam).where(where);
+		await db.transaction(async (tx) => {
+			const examWhere = and(eq(examTable.id, examId));
+			const [updatedExam] = await db.update(examTable).set(parsedExam).where(examWhere).returning();
+
+			const notificationWhere = eq(notification.resourceId, updatedExam.id);
+			await tx
+				.update(notification)
+				.set({ deliverAt: getDateNDaysAgo(7, updatedExam.date) })
+				.where(notificationWhere);
+		});
 
 		return redirect(302, `/term/${termId}/exams`);
 	},
@@ -69,7 +78,12 @@ export const actions: Actions = {
 
 		const { examId } = event.params;
 
-		const where = eq(examTable.id, examId);
-		await db.delete(examTable).where(where);
+		await db.transaction(async (tx) => {
+			const examWhere = eq(examTable.id, examId);
+			const [deletedExam] = await tx.delete(examTable).where(examWhere).returning();
+
+			const notificationWhere = eq(notification.resourceId, deletedExam.id);
+			await tx.delete(notification).where(notificationWhere);
+		});
 	}
 };
