@@ -10,7 +10,6 @@ export const profile = pgTable('profile', {
 		.references(() => user.id),
 	displayName: text(),
 	bio: text(),
-	verified: boolean().notNull().default(false),
 	complete: boolean().notNull().default(false),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp()
