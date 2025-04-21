@@ -1,13 +1,21 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import type { CourseSchedule } from '$lib/server/db/schemas/courseSchedule';
 import type { Task } from '$lib/server/db/schemas/task';
 import type { Exam } from '$lib/server/db/schemas/exam';
 
 type CourseInformation = { courseName: string; color: string };
 type Schedule = {
 	schedule: {
-		classes: (CourseSchedule & CourseInformation)[];
+		classes: {
+			id: string;
+			startDateTime: Date;
+			endDateTime: Date;
+			courseId: string;
+			courseName: string;
+			courseClassName: string;
+			location: string;
+			color: string;
+		}[];
 		tasks: (Task & CourseInformation)[];
 		exams: (Exam & CourseInformation)[];
 	};

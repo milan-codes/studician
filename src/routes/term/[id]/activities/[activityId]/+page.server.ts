@@ -2,11 +2,12 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import {
-	activitySchedule as activityScheduleTable,
+	activityEvent as activityEventTable,
 	activity as activityTable,
+	schedule as scheduleTable,
 	term as termTable
 } from '$lib/server/db/schema';
-import { and, eq, getTableColumns } from 'drizzle-orm';
+import { and, eq, getTableColumns, inArray } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
@@ -62,8 +63,17 @@ export const actions: Actions = {
 		const { activityId } = event.params;
 
 		await db.transaction(async (tx) => {
-			const activityScheduleWhere = eq(activityScheduleTable.activityId, activityId);
-			await tx.delete(activityScheduleTable).where(activityScheduleWhere);
+			const activityEventWhere = eq(activityEventTable.activityId, activityId);
+			const deletedActivityEvents = await tx
+				.delete(activityEventTable)
+				.where(activityEventWhere)
+				.returning({ id: activityTable.id });
+			const deletedActivityEventIds = deletedActivityEvents.map(
+				(deletedActivityEvent) => deletedActivityEvent.id
+			);
+
+			const scheduleWhere = inArray(scheduleTable.eventId, deletedActivityEventIds);
+			await tx.delete(scheduleTable).where(scheduleWhere);
 
 			const activityWhere = eq(activityTable.id, activityId);
 			await tx.delete(activityTable).where(activityWhere);

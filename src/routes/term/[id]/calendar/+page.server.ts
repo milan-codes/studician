@@ -1,5 +1,4 @@
 import { redirect } from '@sveltejs/kit';
-import type { CourseSchedule } from '$lib/server/db/schemas/courseSchedule';
 import type { Task } from '$lib/server/db/schemas/task';
 import type { Exam } from '$lib/server/db/schemas/exam';
 import type { PageServerLoad } from './$types';
@@ -7,21 +6,35 @@ import { superValidate } from 'sveltekit-superforms';
 import { formSchema } from './schema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
-import { activity, activitySchedule, term } from '$lib/server/db/schema';
+import { activity, activityEvent, schedule, term } from '$lib/server/db/schema';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { message } from 'sveltekit-superforms';
-import type { ActivitySchedule } from '$lib/server/db/schemas/activitySchedule';
 import { generateActivitySchedule } from '$lib/utils';
 
 type CourseInformation = { courseName: string; color: string };
-type ActivityInformation = { activityName: string; color: string };
 type Schedule = {
 	schedule: {
-		classes: (CourseSchedule & CourseInformation)[];
+		classes: {
+			id: string;
+			startDateTime: Date;
+			endDateTime: Date;
+			courseId: string;
+			courseName: string;
+			courseClassName: string;
+			location: string;
+			color: string;
+		}[];
 		tasks: (Task & CourseInformation)[];
 		exams: (Exam & CourseInformation)[];
-		activities: (ActivitySchedule & ActivityInformation)[];
+		activities: {
+			id: string;
+			startDateTime: Date;
+			endDateTime: Date;
+			activityId: string;
+			activityName: string;
+			color: string;
+		}[];
 	};
 };
 
@@ -32,7 +45,7 @@ export const load: PageServerLoad = async (event) => {
 		method: 'GET'
 	});
 
-	const { schedule } = (await response.json()) as Schedule;
+	const { schedule: userSchedule } = (await response.json()) as Schedule;
 
 	const activityWhere = and(
 		eq(activity.termId, event.params.id),
@@ -44,7 +57,7 @@ export const load: PageServerLoad = async (event) => {
 		.innerJoin(term, eq(term.id, activity.termId))
 		.where(activityWhere);
 
-	return { activities, form: await superValidate(zod(formSchema)), schedule };
+	return { activities, form: await superValidate(zod(formSchema)), schedule: userSchedule };
 };
 
 export const actions: Actions = {
@@ -55,22 +68,39 @@ export const actions: Actions = {
 		const form = await superValidate(event, zod(formSchema));
 		if (!form.valid) return message(form, 'Invalid form');
 
-		if (!form.data.repeatsWeekly) return await db.insert(activitySchedule).values(form.data);
+		const { activityId, ...restOfFormData } = form.data;
+		const startTime = restOfFormData.startTime.toTimeString().split(' ')[0];
+		const endTime = restOfFormData.endTime.toTimeString().split(' ')[0];
 
+		const [createdActivityEvent] = await db
+			.insert(activityEvent)
+			.values({ activityId, startTime, endTime })
+			.returning();
+
+		if (!form.data.repeatsWeekly) {
+			await db.insert(schedule).values({
+				startDateTime: form.data.startTime,
+				endDateTime: form.data.endTime,
+				eventId: createdActivityEvent.id,
+				eventType: 'ACTIVITY'
+			});
+			return;
+		}
 		const activeTermWhere = and(eq(term.id, event.params.id), eq(term.userId, userId));
 		const [activeTerm] = await db.select().from(term).where(activeTermWhere).limit(1);
 
 		if (!activeTerm) return message(form, 'Invalid term');
 
-		const schedule = generateActivitySchedule(
+		const activitySchedule = generateActivitySchedule(
 			form.data.startTime,
 			form.data.endTime,
 			activeTerm.classEndDate
 		).map((scheduleWithoutActivityId) => ({
 			...scheduleWithoutActivityId,
-			activityId: form.data.activityId
+			eventId: createdActivityEvent.id,
+			eventType: 'ACTIVITY' as const
 		}));
 
-		await db.insert(activitySchedule).values(schedule);
+		await db.insert(schedule).values(activitySchedule);
 	}
 };

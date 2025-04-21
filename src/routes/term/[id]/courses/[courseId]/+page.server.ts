@@ -2,14 +2,15 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import {
-	courseSchedule as courseScheduleTable,
+	courseClass as courseClassTable,
 	course as courseTable,
 	exam as examTable,
 	note as noteTable,
+	schedule as scheduleTable,
 	task as taskTable,
 	term as termTable
 } from '$lib/server/db/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
@@ -69,16 +70,27 @@ export const actions: Actions = {
 			const taskWhere = eq(taskTable.courseId, courseId);
 			const examWhere = eq(examTable.courseId, courseId);
 			const noteWhere = eq(noteTable.courseId, courseId);
-			const courseScheduleWhere = eq(courseScheduleTable.courseId, courseId);
-			const courseWhere = eq(courseTable.id, courseId);
+			const courseClassWhere = eq(courseClassTable.courseId, courseId);
 
 			await Promise.all([
 				tx.delete(taskTable).where(taskWhere),
 				tx.delete(examTable).where(examWhere),
-				tx.delete(noteTable).where(noteWhere),
-				tx.delete(courseScheduleTable).where(courseScheduleWhere),
-				tx.delete(courseTable).where(courseWhere)
+				tx.delete(noteTable).where(noteWhere)
 			]);
+
+			const deletedCourseClasses = await tx
+				.delete(courseClassTable)
+				.where(courseClassWhere)
+				.returning({ id: courseClassTable.id });
+
+			const deletedCourseClassIds = deletedCourseClasses.map(
+				(deletedCourseClass) => deletedCourseClass.id
+			);
+			const scheduleWhere = inArray(scheduleTable.eventId, deletedCourseClassIds);
+			await tx.delete(scheduleTable).where(scheduleWhere);
+
+			const courseWhere = eq(courseTable.id, courseId);
+			await tx.delete(courseTable).where(courseWhere);
 		});
 	}
 };

@@ -1,8 +1,20 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.js';
-	import type { CourseSchedule } from '$lib/server/db/schemas/courseSchedule';
 
-	let { courseClasses }: { courseClasses: CourseSchedule[] } = $props();
+	let {
+		courseClasses
+	}: {
+		courseClasses: {
+			id: string;
+			startDateTime: Date;
+			endDateTime: Date;
+			courseId: string;
+			courseName: string;
+			courseClassName: string;
+			location: string;
+			color: string;
+		}[];
+	} = $props();
 </script>
 
 <Card.Root class="transition-all">

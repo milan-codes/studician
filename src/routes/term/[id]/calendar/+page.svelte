@@ -19,9 +19,9 @@
 	let classEvents = $derived(
 		data.schedule.classes.map((courseClass) => ({
 			id: courseClass.id,
-			title: `${courseClass.courseName} - ${courseClass.name}`,
-			start: new Date(courseClass.startTime),
-			end: new Date(courseClass.endTime),
+			title: `${courseClass.courseName} - ${courseClass.courseClassName}`,
+			start: new Date(courseClass.startDateTime),
+			end: new Date(courseClass.endDateTime),
 			styles: [`background-color: ${courseClass.color}`],
 			extendedProps: {
 				type: 'class'
@@ -60,8 +60,8 @@
 		data.schedule.activities.map((activityEvent) => ({
 			id: activityEvent.id,
 			title: activityEvent.activityName,
-			start: new Date(activityEvent.startTime),
-			end: new Date(activityEvent.endTime),
+			start: new Date(activityEvent.startDateTime),
+			end: new Date(activityEvent.endDateTime),
 			styles: [`background-color: ${activityEvent.color}`],
 			extendedProps: {
 				type: 'activity'

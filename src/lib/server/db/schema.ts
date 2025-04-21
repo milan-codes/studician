@@ -1,11 +1,12 @@
 export { activity } from './schemas/activity';
-export { activitySchedule } from './schemas/activitySchedule';
+export { activityEvent } from './schemas/activityEvent';
 export { course } from './schemas/course';
-export { courseSchedule } from './schemas/courseSchedule';
+export { courseClass, courseClassRecurrence } from './schemas/courseClass';
 export { exam } from './schemas/exam';
 export { note } from './schemas/note';
 export { notification, notificationType } from './schemas/notification';
 export { profile } from './schemas/profile';
+export { schedule, scheduleEventType } from './schemas/schedule';
 export { session } from './schemas/session';
 export { task, taskStatus } from './schemas/task';
 export { term } from './schemas/term';

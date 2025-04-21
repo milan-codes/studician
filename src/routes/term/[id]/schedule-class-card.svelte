@@ -1,15 +1,25 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Separator } from '$lib/components/ui/separator';
-	import type { CourseSchedule } from '$lib/server/db/schemas/courseSchedule';
 	import { formatTime } from '$lib/utils';
 	import { Circle } from 'lucide-svelte';
 
 	let {
 		courseClass,
 		termId
-	}: { courseClass: CourseSchedule & { courseName: string; color: string }; termId: string } =
-		$props();
+	}: {
+		courseClass: {
+			id: string;
+			startDateTime: Date;
+			endDateTime: Date;
+			courseId: string;
+			courseName: string;
+			courseClassName: string;
+			location: string;
+			color: string;
+		};
+		termId: string;
+	} = $props();
 </script>
 
 <a href={`/term/${termId}/courses/${courseClass.courseId}`}>
@@ -17,8 +27,8 @@
 		<Card.Header class="px-3 py-2">
 			<div class="flex gap-2">
 				<div class="grid min-w-max">
-					<p class="text-sm text-muted-foreground">{formatTime(courseClass.startTime)}</p>
-					<p class="text-sm text-muted-foreground">{formatTime(courseClass.endTime)}</p>
+					<p class="text-sm text-muted-foreground">{formatTime(courseClass.startDateTime)}</p>
+					<p class="text-sm text-muted-foreground">{formatTime(courseClass.endDateTime)}</p>
 				</div>
 				<Separator orientation="vertical" />
 				<div class="grid w-full">
@@ -29,7 +39,7 @@
 						</Card.Title>
 					</div>
 					<Card.Description class="w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-						{courseClass.name ?? 'No name provided'} ({courseClass.location})
+						{courseClass.courseClassName ?? 'No name provided'} ({courseClass.location})
 					</Card.Description>
 				</div>
 			</div>

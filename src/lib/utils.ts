@@ -34,14 +34,15 @@ export function generateCourseSchedule(
 	termEnd: Date,
 	dayOfWeek: number,
 	startTime: string,
-	lengthInMinutes: number,
+	endTime: string,
 	recurrence: 'WEEKLY' | 'BIWEEKLY'
 ) {
-	const courseClasses: { startTime: Date; endTime: Date }[] = [];
-	const [hours, minutes] = startTime.split(':').map(Number);
+	const courseClasses: { startDateTime: Date; endDateTime: Date }[] = [];
+	const [startHours, startMinutes] = startTime.split(':').map(Number);
+	const [endHours, endMinutes] = endTime.split(':').map(Number);
 
 	const currentDate = new Date(termStart);
-	currentDate.setHours(hours, minutes, 0, 0);
+	currentDate.setHours(startHours, startMinutes, 0, 0);
 
 	while (currentDate.getDay() !== dayOfWeek) currentDate.setDate(currentDate.getDate() + 1);
 
@@ -49,11 +50,11 @@ export function generateCourseSchedule(
 
 	while (currentDate <= termEnd) {
 		const endDateTime = new Date(currentDate);
-		endDateTime.setMinutes(endDateTime.getMinutes() + lengthInMinutes);
+		endDateTime.setHours(endHours, endMinutes);
 
 		courseClasses.push({
-			startTime: new Date(currentDate),
-			endTime: endDateTime
+			startDateTime: new Date(currentDate),
+			endDateTime
 		});
 
 		currentDate.setDate(currentDate.getDate() + recurrenceStep);
@@ -70,8 +71,8 @@ export function generateActivitySchedule(startTime: Date, endTime: Date, until: 
 
 	while (currentStart <= until) {
 		result.push({
-			startTime: new Date(currentStart),
-			endTime: new Date(currentEnd)
+			startDateTime: new Date(currentStart),
+			endDateTime: new Date(currentEnd)
 		});
 
 		currentStart.setDate(currentStart.getDate() + 7);

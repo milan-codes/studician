@@ -3,12 +3,13 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import {
 	activity,
-	activitySchedule,
 	course,
-	courseSchedule,
+	schedule,
 	exam,
 	task,
-	term
+	term,
+	courseClass,
+	activityEvent
 } from '$lib/server/db/schema';
 import { and, asc, eq, getTableColumns, sql } from 'drizzle-orm';
 
@@ -28,7 +29,8 @@ export const GET: RequestHandler = async (event) => {
 	const selectedDate = date;
 
 	const classesWhere = and(
-		date ? sql`${courseSchedule.startTime}::date = ${selectedDate}::date` : undefined,
+		date ? sql`${schedule.startDateTime}::date = ${selectedDate}::date` : undefined,
+		eq(schedule.eventType, 'CLASS'),
 		eq(course.termId, termId),
 		eq(term.userId, event.locals.user.id)
 	);
@@ -45,20 +47,31 @@ export const GET: RequestHandler = async (event) => {
 		eq(term.userId, event.locals.user.id)
 	);
 
-	const activityScheduleWhere = and(
-		date ? sql`${activitySchedule.startTime}::date = ${selectedDate}::date` : undefined,
+	const activitiesWhere = and(
+		date ? sql`${schedule.startDateTime}::date = ${selectedDate}::date` : undefined,
+		eq(schedule.eventType, 'ACTIVITY'),
 		eq(activity.termId, termId),
 		eq(term.userId, event.locals.user.id)
 	);
 
 	const [classes, tasks, exams, activities] = await Promise.all([
 		db
-			.select({ ...getTableColumns(courseSchedule), courseName: course.name, color: course.color })
-			.from(courseSchedule)
-			.innerJoin(course, eq(course.id, courseSchedule.courseId))
+			.select({
+				id: schedule.id,
+				startDateTime: schedule.startDateTime,
+				endDateTime: schedule.endDateTime,
+				courseId: course.id,
+				courseName: course.name,
+				courseClassName: courseClass.name,
+				location: courseClass.location,
+				color: course.color
+			})
+			.from(schedule)
+			.innerJoin(courseClass, eq(courseClass.id, schedule.eventId))
+			.innerJoin(course, eq(course.id, courseClass.courseId))
 			.innerJoin(term, eq(term.id, course.termId))
 			.where(classesWhere)
-			.orderBy(asc(courseSchedule.startTime), asc(course.name)),
+			.orderBy(asc(schedule.startDateTime), asc(course.name)),
 		db
 			.select({ ...getTableColumns(task), courseName: course.name, color: course.color })
 			.from(task)
@@ -75,25 +88,29 @@ export const GET: RequestHandler = async (event) => {
 			.orderBy(asc(exam.date), asc(exam.name)),
 		db
 			.select({
-				...getTableColumns(activitySchedule),
+				id: schedule.id,
+				startDateTime: schedule.startDateTime,
+				endDateTime: schedule.endDateTime,
+				activityId: activity.id,
 				activityName: activity.name,
 				color: activity.color
 			})
-			.from(activitySchedule)
-			.innerJoin(activity, eq(activity.id, activitySchedule.activityId))
+			.from(schedule)
+			.innerJoin(activityEvent, eq(activityEvent.id, schedule.eventId))
+			.innerJoin(activity, eq(activity.id, activityEvent.activityId))
 			.innerJoin(term, eq(term.id, activity.termId))
-			.where(activityScheduleWhere)
-			.orderBy(asc(activitySchedule.startTime), asc(activity.name))
+			.where(activitiesWhere)
+			.orderBy(asc(schedule.startDateTime), asc(activity.name))
 	]);
 
-	const schedule = {
+	const mergedSchedule = {
 		classes,
 		tasks,
 		exams,
 		activities
 	};
 
-	return json({ schedule });
+	return json({ schedule: mergedSchedule });
 };
 
 export const PUT: RequestHandler = async (event) => {
@@ -115,11 +132,11 @@ export const PUT: RequestHandler = async (event) => {
 		return json({ message: 'Type must be either class, task, exam or activity' }, { status: 400 });
 
 	if (type === 'class') {
-		const courseScheduleWhere = eq(courseSchedule.id, id);
+		const scheduleWhere = eq(schedule.id, id);
 		await db
-			.update(courseSchedule)
-			.set({ startTime: new Date(start), endTime: new Date(end) })
-			.where(courseScheduleWhere);
+			.update(schedule)
+			.set({ startDateTime: new Date(start), endDateTime: new Date(end) })
+			.where(scheduleWhere);
 	} else if (type === 'task') {
 		const taskWhere = eq(task.id, id);
 		await db
@@ -133,11 +150,11 @@ export const PUT: RequestHandler = async (event) => {
 			.set({ date: new Date(start) })
 			.where(examWhere);
 	} else {
-		const activityScheduleWhere = eq(activitySchedule.id, id);
+		const scheduleWhere = eq(schedule.id, id);
 		await db
-			.update(activitySchedule)
-			.set({ startTime: new Date(start), endTime: new Date(end) })
-			.where(activityScheduleWhere);
+			.update(schedule)
+			.set({ startDateTime: new Date(start), endDateTime: new Date(end) })
+			.where(scheduleWhere);
 	}
 
 	return new Response(null, { status: 204 });

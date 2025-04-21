@@ -9,10 +9,8 @@ export const formSchema = z.object({
 		z.object({
 			name: z.string().trim().min(1, { message: 'Name cannot be empty' }),
 			dayOfWeek: z.string().trim().length(1, { message: 'Day of week must be a valid day' }),
-			time: z.string().trim().min(1, { message: 'Time cannot be empty' }),
-			length: z
-				.number({ invalid_type_error: 'Length cannot be empty' })
-				.min(1, { message: 'Length must be a positive number' }),
+			startTime: z.string().trim().min(1, { message: 'Start time cannot be empty' }),
+			endTime: z.string().trim().min(1, { message: 'End time cannot be empty' }),
 			location: z.string().trim().min(1, { message: 'Location cannot be empty' }),
 			recurrence: z.enum(['WEEKLY', 'BIWEEKLY'])
 		})

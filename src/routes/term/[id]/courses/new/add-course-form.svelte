@@ -24,7 +24,14 @@
 	function addClass() {
 		$formData.classes = [
 			...$formData.classes,
-			{ name: '', dayOfWeek: '1', time: '08:00', length: 0, location: '', recurrence: 'WEEKLY' }
+			{
+				name: '',
+				dayOfWeek: '1',
+				startTime: '08:00',
+				endTime: '09:30',
+				location: '',
+				recurrence: 'WEEKLY'
+			}
 		];
 	}
 
@@ -115,20 +122,20 @@
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
-			<Form.Field {form} name="classes[{index}].time">
+			<Form.Field {form} name="classes[{index}].startTime">
 				<Form.Control>
 					{#snippet children({ props })}
-						<Form.Label class={cn(index !== 0 && 'sr-only')}>Time</Form.Label>
-						<Input {...props} type="time" bind:value={$formData.classes[index].time} />
+						<Form.Label class={cn(index !== 0 && 'sr-only')}>Start time</Form.Label>
+						<Input {...props} type="time" bind:value={$formData.classes[index].startTime} />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
-			<Form.Field {form} name="classes[{index}].length">
+			<Form.Field {form} name="classes[{index}].endTime">
 				<Form.Control>
 					{#snippet children({ props })}
-						<Form.Label class={cn(index !== 0 && 'sr-only')}>Length in minutes</Form.Label>
-						<Input {...props} type="number" bind:value={$formData.classes[index].length} />
+						<Form.Label class={cn(index !== 0 && 'sr-only')}>End time</Form.Label>
+						<Input {...props} type="time" bind:value={$formData.classes[index].endTime} />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />

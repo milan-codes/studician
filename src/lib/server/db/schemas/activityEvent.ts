@@ -1,14 +1,14 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, time, timestamp } from 'drizzle-orm/pg-core';
 import { ulid } from 'ulidx';
 import { activity } from './activity';
 
-export const activitySchedule = pgTable('activity_schedule', {
+export const activityEvent = pgTable('activity_event', {
 	id: text().primaryKey().$defaultFn(ulid),
 	activityId: text()
 		.notNull()
 		.references(() => activity.id),
-	startTime: timestamp().notNull(),
-	endTime: timestamp().notNull(),
+	startTime: time().notNull(),
+	endTime: time().notNull(),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp()
 		.notNull()
@@ -16,4 +16,4 @@ export const activitySchedule = pgTable('activity_schedule', {
 		.$onUpdateFn(() => new Date())
 });
 
-export type ActivitySchedule = typeof activitySchedule.$inferSelect;
+export type ActivityEvent = typeof activityEvent.$inferSelect;
