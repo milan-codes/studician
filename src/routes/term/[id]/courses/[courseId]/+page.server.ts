@@ -16,6 +16,8 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
 import type { Actions } from './$types';
 import { message } from 'sveltekit-superforms';
+import type { Schedule } from '$lib/server/db/schemas/schedule';
+import { generateCourseSchedule } from '$lib/utils';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user || !event.locals.profile) return redirect(302, '/login');
@@ -37,7 +39,18 @@ export const load: PageServerLoad = async (event) => {
 		description: course.description ?? undefined
 	};
 
-	return { form: await superValidate(courseWithoutNullValues, zod(formSchema)) };
+	const courseClassesWhere = eq(courseClassTable.courseId, course.id);
+	const courseClasses = await db.select().from(courseClassTable).where(courseClassesWhere);
+
+	const coursesWithClasses = {
+		...courseWithoutNullValues,
+		classes: courseClasses.map((courseClass) => ({
+			...courseClass,
+			dayOfWeek: courseClass.dayOfWeek.toString()
+		}))
+	};
+
+	return { form: await superValidate(coursesWithClasses, zod(formSchema)) };
 };
 
 export const actions: Actions = {
@@ -50,13 +63,63 @@ export const actions: Actions = {
 
 		const { id: termId, courseId } = event.params;
 
+		const { classes, ...formData } = form.data;
+
 		const parsedCourse = {
-			...form.data,
-			description: form.data.description ? form.data.description : null
+			...formData,
+			description: formData.description ? formData.description : null
 		};
 
-		const where = and(eq(courseTable.id, courseId), eq(courseTable.termId, termId));
-		await db.update(courseTable).set(parsedCourse).where(where);
+		await db.transaction(async (tx) => {
+			const previousCourseClassesWhere = eq(courseClassTable.courseId, courseId);
+			const previousCourseClasses = await tx
+				.select({ id: courseClassTable.id })
+				.from(courseClassTable)
+				.where(previousCourseClassesWhere);
+			const previousCourseClassIds = previousCourseClasses.map(
+				(previousCourseClass) => previousCourseClass.id
+			);
+
+			const scheduleWhere = inArray(scheduleTable.eventId, previousCourseClassIds);
+			await tx.delete(scheduleTable).where(scheduleWhere);
+
+			const courseClassWhere = eq(courseClassTable.courseId, courseId);
+			await tx.delete(courseClassTable).where(courseClassWhere);
+
+			const parsedClasses = classes.map((parsedClass) => ({
+				...parsedClass,
+				courseId,
+				dayOfWeek: +parsedClass.dayOfWeek
+			}));
+
+			const courseClasses = await tx.insert(courseClassTable).values(parsedClasses).returning();
+
+			const activeTermWhere = eq(termTable.id, termId);
+			const [activeTerm] = await tx.select().from(termTable).where(activeTermWhere).limit(1);
+
+			const schedule: Omit<Schedule, 'id' | 'createdAt' | 'updatedAt'>[] = [];
+			for (const courseClass of courseClasses) {
+				const courseSchedule = generateCourseSchedule(
+					activeTerm.startDate,
+					activeTerm.classEndDate,
+					courseClass.dayOfWeek,
+					courseClass.startTime,
+					courseClass.endTime,
+					courseClass.recurrence
+				);
+				const scheduleWithCourseData = courseSchedule.map((courseEvent) => ({
+					eventId: courseClass.id,
+					eventType: 'CLASS' as const,
+					...courseEvent
+				}));
+				schedule.push(...scheduleWithCourseData);
+			}
+
+			await tx.insert(scheduleTable).values(schedule);
+
+			const courseWhere = and(eq(courseTable.id, courseId), eq(courseTable.termId, termId));
+			await tx.update(courseTable).set(parsedCourse).where(courseWhere);
+		});
 
 		return redirect(302, `/term/${termId}/courses`);
 	},
