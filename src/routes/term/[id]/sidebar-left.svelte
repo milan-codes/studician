@@ -2,7 +2,6 @@
 	import Calendar from 'lucide-svelte/icons/calendar';
 	import House from 'lucide-svelte/icons/house';
 	import Inbox from 'lucide-svelte/icons/inbox';
-	import MessageCircleQuestion from 'lucide-svelte/icons/message-circle-question';
 	import Search from 'lucide-svelte/icons/search';
 	import Settings2 from 'lucide-svelte/icons/settings-2';
 	import Sparkles from 'lucide-svelte/icons/sparkles';
@@ -88,11 +87,6 @@
 				title: 'Settings',
 				url: '/settings',
 				icon: Settings2
-			},
-			{
-				title: 'Help',
-				url: '/help',
-				icon: MessageCircleQuestion
 			}
 		]
 	});
