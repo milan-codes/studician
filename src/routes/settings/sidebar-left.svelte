@@ -13,7 +13,8 @@
 			{
 				title: 'Profile',
 				url: '/settings',
-				icon: CircleUser
+				icon: CircleUser,
+				isIndex: true
 			},
 			{
 				title: 'Account',
