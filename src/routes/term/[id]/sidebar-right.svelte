@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DatePicker from './date-picker.svelte';
-	import NavUser from './nav-user.svelte';
+	import NavUser from '$lib/components/nav-user.svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { getLocalTimeZone, today, type DateValue } from '@internationalized/date';

@@ -8,7 +8,7 @@
 	import Sparkles from 'lucide-svelte/icons/sparkles';
 
 	import NavFavorites from './nav-favorites.svelte';
-	import NavMain from './nav-main.svelte';
+	import NavMain from '$lib/components/nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
 	import TermSwitcher from './term-switcher.svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';

@@ -25,11 +25,16 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	} else if (pathname.startsWith('/complete-profle')) {
 		if (!user) return redirect(302, '/login');
 		else if (profile?.complete) return redirect(302, '/term');
-	} else if (pathname.startsWith('/profile') || pathname.startsWith('/term')) {
+	} else if (
+		pathname.startsWith('/profile') ||
+		pathname.startsWith('/term') ||
+		pathname.startsWith('/settings')
+	) {
 		if (!user) return redirect(302, '/login');
 		else if (!profile?.complete) return redirect(302, '/complete-profile');
 	} else if (pathname.startsWith('/api')) {
-		if (!user) return json({ message: 'You must be authorized to access this resource' }, { status: 401 })
+		if (!user)
+			return json({ message: 'You must be authorized to access this resource' }, { status: 401 });
 	}
 
 	return resolve(event);
