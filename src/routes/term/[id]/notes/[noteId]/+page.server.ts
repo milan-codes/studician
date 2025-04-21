@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { course as courseTable } from '$lib/server/db/schema';
+import { course, course as courseTable } from '$lib/server/db/schema';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -27,7 +27,10 @@ export const load: PageServerLoad = async (event) => {
 
 	if (!note) return redirect(302, `/term/${event.params.id}/notes`);
 
-	const courseWhere = and(eq(termTable.userId, event.locals.user.id));
+	const courseWhere = and(
+		eq(course.termId, event.params.id),
+		eq(termTable.userId, event.locals.user.id)
+	);
 
 	const courses = await db
 		.select({ ...getTableColumns(courseTable) })

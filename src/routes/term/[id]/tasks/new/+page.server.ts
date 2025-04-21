@@ -14,7 +14,7 @@ import { getDateNDaysAgo } from '$lib/utils';
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) return redirect(302, '/login');
 
-	const where = and(eq(term.userId, event.locals.user.id));
+	const where = and(eq(course.termId, event.params.id), eq(term.userId, event.locals.user.id));
 
 	const courses = await db
 		.select({ ...getTableColumns(course) })
@@ -40,13 +40,11 @@ export const actions: Actions = {
 				.values({ status: 'TODO', ...form.data })
 				.returning();
 
-			await tx
-				.insert(notification)
-				.values({
-					resourceId: addedTask.id,
-					resourceType: 'TASK',
-					deliverAt: getDateNDaysAgo(3, addedTask.dueDate)
-				});
+			await tx.insert(notification).values({
+				resourceId: addedTask.id,
+				resourceType: 'TASK',
+				deliverAt: getDateNDaysAgo(3, addedTask.dueDate)
+			});
 		});
 
 		return redirect(302, `/term/${termId}/tasks`);

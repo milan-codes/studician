@@ -8,7 +8,7 @@ import { and, getTableColumns } from 'drizzle-orm';
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) return redirect(302, '/login');
 
-	const where = and(eq(term.userId, event.locals.user.id));
+	const where = and(eq(activity.termId, event.params.id), eq(term.userId, event.locals.user.id));
 	const orderBy = desc(activity.updatedAt);
 
 	const [activities, [total]] = await Promise.all([

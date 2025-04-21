@@ -28,7 +28,10 @@ export const load: PageServerLoad = async (event) => {
 
 	if (!task) return redirect(302, `/term/${event.params.id}/tasks`);
 
-	const courseWhere = and(eq(termTable.userId, event.locals.user.id));
+	const courseWhere = and(
+		eq(courseTable.termId, event.params.id),
+		eq(termTable.userId, event.locals.user.id)
+	);
 
 	const courses = await db
 		.select({ ...getTableColumns(courseTable) })
