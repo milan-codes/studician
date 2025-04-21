@@ -20,16 +20,12 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	const { user, profile } = event.locals;
 
 	if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {
-		if (user && profile?.complete) return redirect(302, '/profile');
+		if (user && profile?.complete) return redirect(302, '/term');
 		else if (user && !profile?.complete) return redirect(302, '/complete-profile');
 	} else if (pathname.startsWith('/complete-profle')) {
 		if (!user) return redirect(302, '/login');
 		else if (profile?.complete) return redirect(302, '/term');
-	} else if (
-		pathname.startsWith('/profile') ||
-		pathname.startsWith('/term') ||
-		pathname.startsWith('/settings')
-	) {
+	} else if (pathname.startsWith('/settings') || pathname.startsWith('/term')) {
 		if (!user) return redirect(302, '/login');
 		else if (!profile?.complete) return redirect(302, '/complete-profile');
 	} else if (pathname.startsWith('/api')) {
