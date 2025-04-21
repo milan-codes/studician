@@ -10,6 +10,7 @@
 	import ScheduleClassCard from './schedule-class-card.svelte';
 	import ScheduleTaskCard from './schedule-task-card.svelte';
 	import ScheduleExamCard from './schedule-exam-card.svelte';
+	import ScheduleActivityCard from './schedule-activity-card.svelte';
 
 	type CourseInformation = { courseName: string; color: string };
 	type Schedule = {
@@ -26,6 +27,14 @@
 			}[];
 			tasks: (Task & CourseInformation)[];
 			exams: (Exam & CourseInformation)[];
+			activities: {
+				id: string;
+				startDateTime: Date;
+				endDateTime: Date;
+				activityId: string;
+				activityName: string;
+				color: string;
+			}[];
 		};
 	};
 
@@ -73,8 +82,20 @@
 							{/each}
 						</div>
 					{/if}
+					{#if schedule.schedule.activities.length}
+						{#if schedule.schedule.classes.length}
+							<Sidebar.Separator class="mx-0 my-4" />
+						{/if}
+						<div class="grid gap-2 px-2">
+							{#each schedule.schedule.activities as activityEvent}
+								<ScheduleActivityCard {activityEvent} {termId} />
+							{/each}
+						</div>
+					{/if}
 					{#if schedule.schedule.tasks.length}
-						<Sidebar.Separator class="mx-0 my-4" />
+						{#if schedule.schedule.activities.length}
+							<Sidebar.Separator class="mx-0 my-4" />
+						{/if}
 						<div class="grid gap-2 px-2">
 							{#each schedule.schedule.tasks as task}
 								<ScheduleTaskCard {task} {termId} />
@@ -82,7 +103,9 @@
 						</div>
 					{/if}
 					{#if schedule.schedule.exams.length}
-						<Sidebar.Separator class="mx-0 my-4" />
+						{#if schedule.schedule.tasks.length}
+							<Sidebar.Separator class="mx-0 my-4" />
+						{/if}
 						<div class="grid gap-2 px-2">
 							{#each schedule.schedule.exams as exam}
 								<ScheduleExamCard {exam} {termId} />
