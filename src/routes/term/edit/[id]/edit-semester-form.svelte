@@ -23,7 +23,7 @@
 	const { form: formData, enhance } = form;
 </script>
 
-<Card.Root class="mx-auto w-full max-w-sm">
+<Card.Root class="mx-auto w-full max-w-md">
 	<Card.Header>
 		<Card.Title class="text-2xl">Edit term</Card.Title>
 		<Card.Description>Edit the selected term</Card.Description>
