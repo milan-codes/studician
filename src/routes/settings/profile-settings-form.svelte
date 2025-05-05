@@ -27,10 +27,6 @@
 				{#snippet children({ props })}
 					<Form.Label>Display name</Form.Label>
 					<Input {...props} bind:value={$formData.displayName} />
-					<Form.Description
-						>This name will be visible to all users, if it's left empty, only your username will be
-						shown</Form.Description
-					>
 				{/snippet}
 			</Form.Control>
 			<Form.FieldErrors />
