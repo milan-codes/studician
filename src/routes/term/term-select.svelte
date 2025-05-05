@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { buttonVariants } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import type { Term } from '$lib/server/db/schemas/term';
 	import { cn, formatDate } from '$lib/utils';
@@ -24,19 +24,23 @@
 	</Card.Header>
 	<Card.Content>
 		{#if data.total !== 0}
-			<div class="grid gap-2">
+			<div class="grid gap-4">
 				{#each data.terms as term}
-					<a
-						href={`/term/${term.id}`}
-						class="flex flex-col items-start justify-normal rounded-md border bg-popover p-4 transition-all hover:bg-muted md:flex-row md:items-center md:justify-between"
-					>
-						<p class="text-sm font-medium leading-none">
-							{formatDate(term.startDate)} - {formatDate(term.classEndDate)}
-						</p>
-						<p class="text-sm text-muted-foreground">
-							Exam period ends: {formatDate(term.examPeriodEndDate)}
-						</p>
-					</a>
+					<div class="flex flex-col gap-2">
+						<a
+							href={`/term/${term.id}`}
+							class="flex flex-col items-start justify-normal rounded-md border bg-popover p-4 transition-all hover:bg-muted md:flex-row md:items-center md:justify-between"
+						>
+							<p class="text-sm font-medium leading-none">
+								{formatDate(term.startDate)} - {formatDate(term.classEndDate)}
+							</p>
+							<p class="text-sm text-muted-foreground">
+								Exam period ends: {formatDate(term.examPeriodEndDate)}
+							</p>
+						</a>
+						<a href={`/term/edit/${term.id}`} class={buttonVariants({ variant: 'outline' })}>Edit</a
+						>
+					</div>
 				{/each}
 			</div>
 		{:else}
