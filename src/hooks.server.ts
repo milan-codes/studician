@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import { json, redirect, type Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth.js';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
@@ -6,18 +6,36 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	if (!sessionToken) {
 		event.locals.user = null;
 		event.locals.session = null;
-		return resolve(event);
-	}
-
-	const { session, user } = await auth.validateSessionToken(sessionToken);
-	if (session) {
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 	} else {
-		auth.deleteSessionTokenCookie(event);
+		const { session, user, profile } = await auth.validateSessionToken(sessionToken);
+		if (session) auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+		else auth.deleteSessionTokenCookie(event);
+
+		event.locals.user = user;
+		event.locals.session = session;
+		event.locals.profile = profile;
 	}
 
-	event.locals.user = user;
-	event.locals.session = session;
+	const { pathname } = event.url;
+	const { user, profile } = event.locals;
+
+	if (pathname === '/') {
+		if (!user) return redirect(302, '/login');
+		else if (user && profile?.complete) return redirect(302, '/term');
+		else if (user && !profile?.complete) return redirect(302, '/complete-profile');
+	} else if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {
+		if (user && profile?.complete) return redirect(302, '/term');
+		else if (user && !profile?.complete) return redirect(302, '/complete-profile');
+	} else if (pathname.startsWith('/complete-profle')) {
+		if (!user) return redirect(302, '/login');
+		else if (profile?.complete) return redirect(302, '/term');
+	} else if (pathname.startsWith('/settings') || pathname.startsWith('/term')) {
+		if (!user) return redirect(302, '/login');
+		else if (!profile?.complete) return redirect(302, '/complete-profile');
+	} else if (pathname.startsWith('/api')) {
+		if (!user)
+			return json({ message: 'You must be authorized to access this resource' }, { status: 401 });
+	}
 
 	return resolve(event);
 };

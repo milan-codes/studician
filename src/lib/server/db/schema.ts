@@ -1,20 +1,13 @@
-import { pgTable, text, integer, timestamp } from 'drizzle-orm/pg-core';
-
-export const user = pgTable('user', {
-	id: text('id').primaryKey(),
-	age: integer('age'),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull()
-});
-
-export const session = pgTable('session', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id),
-	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
-});
-
-export type Session = typeof session.$inferSelect;
-
-export type User = typeof user.$inferSelect;
+export { activity } from './schemas/activity';
+export { activityEvent } from './schemas/activityEvent';
+export { course } from './schemas/course';
+export { courseClass, courseClassRecurrence } from './schemas/courseClass';
+export { exam } from './schemas/exam';
+export { note } from './schemas/note';
+export { notification, notificationType } from './schemas/notification';
+export { profile } from './schemas/profile';
+export { schedule, scheduleEventType } from './schemas/schedule';
+export { session } from './schemas/session';
+export { task, taskStatus } from './schemas/task';
+export { term } from './schemas/term';
+export { user } from './schemas/user';
