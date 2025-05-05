@@ -36,18 +36,6 @@
 			<Form.FieldErrors />
 		</Form.Field>
 	</div>
-	<div class="grid gap-2">
-		<Form.Field {form} name="bio">
-			<Form.Control>
-				{#snippet children({ props })}
-					<Form.Label>Bio</Form.Label>
-					<Textarea {...props} class="resize-none" bind:value={$formData.bio} />
-					<Form.Description>Your bio will show on your profile</Form.Description>
-				{/snippet}
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-	</div>
 	<Form.Button class="w-max">Update profile</Form.Button>
 	<SuperDebug data={form.form} display={dev} />
 </form>

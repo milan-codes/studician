@@ -15,7 +15,7 @@ export const load: PageServerLoad = async (event) => {
 	const [profile] = await db.select().from(profileTable).where(profileWhere);
 
 	const parsedProfile = profile
-		? { ...profile, displayName: profile.displayName ?? undefined, bio: profile.bio ?? undefined }
+		? { ...profile, displayName: profile.displayName ?? undefined }
 		: undefined;
 
 	return { form: await superValidate(parsedProfile, zod(formSchema)) };
@@ -28,15 +28,14 @@ export const actions: Actions = {
 
 		const form = await superValidate(event, zod(formSchema));
 		if (!form.valid) return message(form, 'Invalid form');
-		const { displayName, bio } = form.data;
+		const { displayName } = form.data;
 
 		const profileWhere = eq(profileTable.userId, userId);
 		await db
 			.update(profileTable)
 			.set({
 				userId,
-				displayName: displayName ? displayName : null,
-				bio: bio ? bio : null
+				displayName: displayName ? displayName : null
 			})
 			.where(profileWhere);
 	}

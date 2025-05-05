@@ -14,7 +14,7 @@ export const actions: Actions = {
 	default: async (event) => {
 		const form = await superValidate(event, zod(formSchema));
 		if (!form.valid) return message(form, 'Invalid form');
-		const { displayName, bio } = form.data;
+		const { displayName } = form.data;
 		const userId = event.locals.user?.id;
 
 		if (!userId) return redirect(302, '/login');
@@ -22,7 +22,6 @@ export const actions: Actions = {
 		await db.insert(profileTable).values({
 			userId,
 			displayName: displayName ? displayName : null,
-			bio: bio ? bio : null,
 			complete: true
 		});
 
