@@ -25,8 +25,8 @@
 
 <Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
-		<Card.Title class="text-2xl">Create term</Card.Title>
-		<Card.Description>Let's start with the most important details</Card.Description>
+		<Card.Title class="text-2xl">Edit term</Card.Title>
+		<Card.Description>Edit the selected term</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<form method="POST" action="?/update" class="grid gap-4" use:enhance>
