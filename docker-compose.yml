@@ -1,0 +1,37 @@
+services:
+  app:
+    restart: always
+    build:
+      context: .
+    depends_on:
+      - database
+      - ollama
+    ports:
+      - ${PORT:-3000}:3000
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      OLLAMA_URL: ${OLLAMA_URL}
+
+  database:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - database:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: always
+    volumes:
+      - ollama:/root/.ollama
+      - ./scripts/ollama.sh:/ollama.sh
+    pull_policy: always
+    tty: true
+    entrypoint: ['/usr/bin/sh', '/ollama.sh']
+
+volumes:
+  database:
+  ollama:

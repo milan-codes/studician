@@ -16,6 +16,8 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
 		"db:push": "drizzle-kit push",
+		"db:generate": "drizzle-kit generate --name",
+		"db:generate-custom": "drizzle-kit generate --custom --name",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio"
 	},
@@ -44,6 +46,7 @@
 		"prettier-plugin-svelte": "^3.3.3",
 		"prettier-plugin-tailwindcss": "^0.6.10",
 		"svelte": "^5.0.0",
+		"svelte-adapter-bun": "^0.5.2",
 		"svelte-check": "^4.0.0",
 		"svelte-sonner": "^0.3.28",
 		"sveltekit-superforms": "^2.23.1",
