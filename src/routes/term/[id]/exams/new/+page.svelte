@@ -12,8 +12,8 @@
 
 <div class="flex items-center justify-between">
 	<div class="space-y-0.5">
-		<h2 class="text-2xl font-bold tracking-tight">Edit exam</h2>
-		<p class="text-muted-foreground">Edit the selected exam</p>
+		<h2 class="text-2xl font-bold tracking-tight">Create new exam</h2>
+		<p class="text-muted-foreground">Set up an exam for this term</p>
 	</div>
 </div>
 <Separator class="my-4" />
